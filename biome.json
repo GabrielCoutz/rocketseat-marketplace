@@ -1,0 +1,14 @@
+{
+	"extends": ["@arthurrios/biome-config/react"],
+	"linter": {
+		"rules": {
+			"suspicious": {
+				"noArrayIndexKey": "off"
+			},
+			"correctness": {
+				"noUnusedImports": "off"
+			}
+		}
+	}
+
+}
