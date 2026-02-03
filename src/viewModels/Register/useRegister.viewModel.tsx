@@ -2,9 +2,11 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { IRegisterFormData, registerScheme } from './register.scheme';
 import { useRegisterMutation } from '../../shared/queries/auth/use-register.mutation';
+import { useUserStore } from '../../shared/store/user-store';
 
 export const useRegisterViewModel = () => {
   const userRegisterMutation = useRegisterMutation();
+  const { setSession } = useUserStore();
   const {
     control,
     handleSubmit,
@@ -23,7 +25,8 @@ export const useRegisterViewModel = () => {
   const onSubmit = handleSubmit(async (payload) => {
     const { confirmPassword, ...registerData } = payload;
 
-    await userRegisterMutation.mutateAsync(registerData);
+    const user = await userRegisterMutation.mutateAsync(registerData);
+    setSession(user);
   });
 
   return {
