@@ -1,9 +1,10 @@
 import { Text, View } from 'react-native';
+import { AppInput } from '../shared/components/AppInput';
 
 export default function LoginScreen() {
   return (
-    <View>
-      <Text>Login Screen</Text>
+    <View className="flex-1 items-center justify-center">
+      <AppInput />
     </View>
   );
 }
