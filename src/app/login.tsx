@@ -1,5 +1,9 @@
-import { View } from 'react-native';
+import { Text, View } from 'react-native';
 
-export default function Register() {
-  return <View></View>;
+export default function LoginScreen() {
+  return (
+    <View>
+      <Text>Login Screen</Text>
+    </View>
+  );
 }
