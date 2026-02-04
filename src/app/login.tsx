@@ -4,7 +4,8 @@ import { AppInput } from '../shared/components/AppInput';
 export default function LoginScreen() {
   return (
     <View className="flex-1 items-center justify-center">
-      <AppInput />
+      <AppInput label="Username" error="dshayui8oldhs" />
+      <AppInput label="Password" secureTextEntry />
     </View>
   );
 }
