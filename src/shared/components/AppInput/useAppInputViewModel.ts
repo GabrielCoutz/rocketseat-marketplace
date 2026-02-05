@@ -7,7 +7,6 @@ interface IUseAppInputViewModelProps {
   value?: string;
   isError?: boolean;
   isDisabled?: boolean;
-  error?: string;
   secureTextEntry?: boolean;
   onFocus?: (event: FocusEvent) => void;
   onBlur?: (event: BlurEvent) => void;
@@ -19,7 +18,6 @@ export const useAppInputViewModel = ({
   value,
   isError,
   isDisabled,
-  error,
   secureTextEntry,
   onFocus,
   onBlur,
@@ -48,10 +46,10 @@ export const useAppInputViewModel = ({
   };
 
   const getIconColor = (): string =>
-    isFocused
-      ? colors['purple-base']
-      : isError
-        ? colors.danger
+    isError
+      ? colors.danger
+      : isFocused
+        ? colors['purple-base']
         : !!value
           ? colors['purple-base']
           : colors.gray[200];

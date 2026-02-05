@@ -42,7 +42,6 @@ export const AppInput = ({
     value,
     isError,
     isDisabled,
-    error,
     secureTextEntry,
     onBlur,
     onFocus,
@@ -51,6 +50,8 @@ export const AppInput = ({
   });
   const styles = appInputVariants({
     isFocused,
+    isDisabled,
+    isError: !!error,
   });
 
   return (
@@ -75,7 +76,7 @@ export const AppInput = ({
           {...rest}
         />
 
-        {rightIcon && !secureTextEntry && (
+        {rightIcon && (
           <Ionicons className="ml-3" name={rightIcon} size={22} color={getIconColor()} />
         )}
 
