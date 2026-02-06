@@ -5,6 +5,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import '../styles/global.css';
 import { AppModal } from '../shared/components/AppModal';
 
+import ToastManager from 'toastify-react-native';
 const queryClient = new QueryClient();
 
 export default function RootLayout() {
@@ -22,6 +23,8 @@ export default function RootLayout() {
         </Stack>
 
         <AppModal />
+
+        <ToastManager useModal={false} />
       </QueryClientProvider>
     </GestureHandlerRootView>
   );
