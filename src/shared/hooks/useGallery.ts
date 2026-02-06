@@ -3,6 +3,7 @@ import { useState } from 'react';
 
 import * as ImagePicker from 'expo-image-picker';
 import { Toast } from 'toastify-react-native';
+import { Alert, Linking } from 'react-native';
 
 export const useGallery = (props: ImagePickerOptions) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -12,8 +13,19 @@ export const useGallery = (props: ImagePickerOptions) => {
     try {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== 'granted') {
-        Toast.info(
-          'Para utilizar esta funcionalidade, é necessário conceder permissão para acessar a galeria.'
+        Alert.alert(
+          'Permissão necessária',
+          'Precisamos de acesso à galeria para selecionar uma imagem.',
+          [
+            {
+              text: 'Cancelar',
+              style: 'cancel',
+            },
+            {
+              text: 'Abrir Configurações',
+              onPress: () => Linking.openSettings(),
+            },
+          ]
         );
 
         return false;

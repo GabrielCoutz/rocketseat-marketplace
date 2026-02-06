@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import { Toast } from 'toastify-react-native';
+import { Alert, Linking } from 'react-native';
 
 interface IUseCameraProps {
   aspect?: [number, number];
@@ -18,9 +19,19 @@ export const useCamera = ({ allowEditing, aspect, exif, quality }: IUseCameraPro
 
       const granted = status === 'granted';
       if (!granted)
-        Toast.error(
-          'Permissão para acessar a câmera negada. Por favor, permita o acesso para usar esta funcionalidade.',
-          'top'
+        Alert.alert(
+          'Permissão necessária',
+          'Precisamos de acesso à câmera para essa funcionalidade.',
+          [
+            {
+              text: 'Cancelar',
+              style: 'cancel',
+            },
+            {
+              text: 'Abrir Configurações',
+              onPress: () => Linking.openSettings(),
+            },
+          ]
         );
 
       return granted;
