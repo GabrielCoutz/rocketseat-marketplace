@@ -6,6 +6,7 @@ import { useUserStore } from '../../shared/store/user-store';
 import { IRegisterFormData, registerScheme } from './register.scheme';
 import { useImage } from '../../shared/hooks/useImage';
 import { useState } from 'react';
+import { CameraType } from 'expo-image-picker';
 
 export const useRegisterViewModel = () => {
   const [avatarUri, setAvatarUri] = useState<string | null>(null);
@@ -13,6 +14,7 @@ export const useRegisterViewModel = () => {
   const { setSession } = useUserStore();
   const { handleSelectImage } = useImage({
     callback: setAvatarUri,
+    cameraType: CameraType.front,
   });
 
   const handleSelectAvatar = async () => await handleSelectImage();
@@ -49,5 +51,6 @@ export const useRegisterViewModel = () => {
     errors,
     onSubmit,
     handleSelectAvatar,
+    avatarUri,
   };
 };
