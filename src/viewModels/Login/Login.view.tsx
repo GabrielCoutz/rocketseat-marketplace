@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import { FC } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-
+import { AppButton } from '../../shared/components/AppButton';
 import { AppInputController } from '../../shared/components/AppInputController';
 import { AuthFormHeader } from '../../shared/components/AuthFormHeader';
 import { KeyboardContainer } from '../../shared/components/KeyboardContainer';
@@ -11,28 +11,40 @@ export const LoginView: FC<ReturnType<typeof useLoginViewModel>> = ({ control, o
   return (
     <KeyboardContainer>
       <View className="flex-1 items-center justify-center px-[40px]">
-        <AuthFormHeader subTitle="Informe seu e-mail e senha" title="Acesse sua conta" />
+        <View className="w-full flex-1 items-center justify-center">
+          <AuthFormHeader subTitle="Informe seu e-mail e senha" title="Acesse sua conta" />
 
-        <AppInputController
-          leftIcon="mail-outline"
-          label="E-MAIL"
-          control={control}
-          placeholder="mail@example.com.br"
-          name="email"
-        />
+          <AppInputController
+            leftIcon="mail-outline"
+            label="E-MAIL"
+            control={control}
+            placeholder="mail@example.com.br"
+            name="email"
+          />
 
-        <AppInputController
-          leftIcon="lock-closed-outline"
-          control={control}
-          name="password"
-          label="SENHA"
-          placeholder="Sua senha"
-          secureTextEntry
-        />
+          <AppInputController
+            leftIcon="lock-closed-outline"
+            control={control}
+            name="password"
+            label="SENHA"
+            placeholder="Sua senha"
+            secureTextEntry
+          />
 
-        <TouchableOpacity onPress={onSubmit}>
-          <Text>Login</Text>
-        </TouchableOpacity>
+          <AppButton className="mt-6" rightIcon="arrow-forward" onPress={onSubmit}>
+            Login
+          </AppButton>
+        </View>
+
+        <View className="flex-2 pb-16">
+          <Text className="mb-6 text-base text-gray-300">Ainda não tem uma conta?</Text>
+          <AppButton
+            variant="outlined"
+            rightIcon="arrow-forward"
+            onPress={() => router.push('/register')}>
+            Registro
+          </AppButton>
+        </View>
       </View>
     </KeyboardContainer>
   );
