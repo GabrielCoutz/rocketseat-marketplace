@@ -22,6 +22,7 @@ export interface IUserStore {
   setSession: (payload: ISetSessionPayload) => Promise<void>;
   logout: VoidFunction;
   updateTokens: (payload: IUpdateTokensPayload) => void;
+  updateUser: (payload: Partial<IUser>) => void;
 }
 
 export const useUserStore = create<IUserStore>()(
@@ -43,6 +44,10 @@ export const useUserStore = create<IUserStore>()(
           token: null,
           refreshToken: null,
         }),
+      updateUser: (payload) =>
+        set((state) => ({
+          user: state.user ? { ...state.user, ...payload } : null,
+        })),
     }),
 
     {

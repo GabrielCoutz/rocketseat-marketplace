@@ -7,11 +7,12 @@ import { IRegisterFormData, registerScheme } from './register.scheme';
 import { useImage } from '../../shared/hooks/useImage';
 import { useState } from 'react';
 import { CameraType } from 'expo-image-picker';
+import { useUploadAvatarMutation } from '../../shared/queries/auth/use-upload-avatar.mutation';
 
 export const useRegisterViewModel = () => {
   const [avatarUri, setAvatarUri] = useState<string | null>(null);
-  const userRegisterMutation = useRegisterMutation();
-  const { setSession } = useUserStore();
+  const uploadAvatarMutation = useUploadAvatarMutation();
+  const { setSession, updateUser } = useUserStore();
   const { handleSelectImage } = useImage({
     callback: setAvatarUri,
     cameraType: CameraType.front,
@@ -34,16 +35,22 @@ export const useRegisterViewModel = () => {
     },
   });
 
+  const userRegisterMutation = useRegisterMutation({
+    onSuccess: async () => {
+      if (avatarUri) {
+        const { url } = await uploadAvatarMutation.mutateAsync(avatarUri);
+
+        updateUser({
+          avatarUrl: url,
+        });
+      }
+    },
+  });
+
   const onSubmit = handleSubmit(async (userData) => {
     const { confirmPassword, ...registerData } = userData;
 
-    const mutationResponse = await userRegisterMutation.mutateAsync(registerData);
-
-    setSession({
-      refreshToken: mutationResponse.refreshToken,
-      token: mutationResponse.token,
-      user: mutationResponse.user,
-    });
+    await userRegisterMutation.mutateAsync(registerData);
   });
 
   return {
