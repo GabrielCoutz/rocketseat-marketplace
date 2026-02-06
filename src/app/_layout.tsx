@@ -3,6 +3,7 @@ import { Stack } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import '../styles/global.css';
+import { AppModal } from '../shared/components/AppModal';
 
 const queryClient = new QueryClient();
 
@@ -19,6 +20,8 @@ export default function RootLayout() {
           <Stack.Screen name="register" />
           <Stack.Screen name="(private)" />
         </Stack>
+
+        <AppModal />
       </QueryClientProvider>
     </GestureHandlerRootView>
   );

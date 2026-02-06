@@ -1,12 +1,36 @@
-import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { IRegisterFormData, registerScheme } from './register.scheme';
+import { useForm } from 'react-hook-form';
+import { useAppModal } from '../../shared/hooks/useAppModal';
 import { useRegisterMutation } from '../../shared/queries/auth/use-register.mutation';
 import { useUserStore } from '../../shared/store/user-store';
+import { IRegisterFormData, registerScheme } from './register.scheme';
 
 export const useRegisterViewModel = () => {
   const userRegisterMutation = useRegisterMutation();
-  const { setSession } = useUserStore();
+  const { setSession, user } = useUserStore();
+  const modals = useAppModal();
+
+  const handleSelectAvatar = () => {
+    modals.showSelection({
+      title: 'Selecionar foto',
+      message: 'Escolha uma opção:',
+      options: [
+        {
+          text: 'Galeria',
+          icon: 'images',
+          variant: 'primary',
+          onPress: () => alert('Galeria'),
+        },
+        {
+          text: 'Câmera',
+          icon: 'camera',
+          variant: 'primary',
+          onPress: () => alert('Câmera'),
+        },
+      ],
+    });
+  };
+
   const {
     control,
     handleSubmit,
@@ -17,21 +41,27 @@ export const useRegisterViewModel = () => {
       name: '',
       email: '',
       password: '',
+      confirmPassword: '',
       phone: '',
-      avatarUrl: '',
     },
   });
 
-  const onSubmit = handleSubmit(async (payload) => {
-    const { confirmPassword, ...registerData } = payload;
+  const onSubmit = handleSubmit(async (userData) => {
+    const { confirmPassword, ...registerData } = userData;
 
-    const user = await userRegisterMutation.mutateAsync(registerData);
-    setSession(user);
+    const mutationResponse = await userRegisterMutation.mutateAsync(registerData);
+
+    setSession({
+      refreshToken: mutationResponse.refreshToken,
+      token: mutationResponse.token,
+      user: mutationResponse.user,
+    });
   });
 
   return {
     control,
-    onSubmit,
     errors,
+    onSubmit,
+    handleSelectAvatar,
   };
 };
