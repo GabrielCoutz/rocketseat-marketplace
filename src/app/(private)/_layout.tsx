@@ -6,5 +6,14 @@ export default function PrivateRoutesLayout() {
 
   if (!token || !user) return <Redirect href="/(public)/login" />;
 
-  return <Stack />;
+  return (
+    <Stack>
+      <Stack.Screen
+        name="(tabs)"
+        options={{
+          headerShown: false,
+        }}
+      />
+    </Stack>
+  );
 }
