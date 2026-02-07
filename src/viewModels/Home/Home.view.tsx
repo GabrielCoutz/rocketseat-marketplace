@@ -8,6 +8,7 @@ import { useHomeViewModel } from './useHome.viewModel';
 import { FC } from 'react';
 import { Footer } from './components/Footer';
 import { colors } from '../../styles/colors';
+import { RenderHeader } from './components/RenderHeader';
 
 export const HomeView: FC<ReturnType<typeof useHomeViewModel>> = ({
   products,
@@ -17,6 +18,8 @@ export const HomeView: FC<ReturnType<typeof useHomeViewModel>> = ({
   isLoading,
   hasNextPage,
   isFetchingNextPage,
+  setSearchInputText,
+  searchInputText,
 }) => {
   return (
     <SafeAreaView edges={['top']} className="flex-1">
@@ -37,12 +40,9 @@ export const HomeView: FC<ReturnType<typeof useHomeViewModel>> = ({
         columnWrapperStyle={{
           justifyContent: 'space-between',
         }}
-        ListHeaderComponent={() => (
-          <>
-            <HomeHeader />
-            <SearchInput />
-          </>
-        )}
+        ListHeaderComponent={
+          <RenderHeader searchInputText={searchInputText} setSearchInputText={setSearchInputText} />
+        }
         ListFooterComponent={() => (
           <Footer isLoading={hasNextPage && (isLoading || isFetchingNextPage)} />
         )}

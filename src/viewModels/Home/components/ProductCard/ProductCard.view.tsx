@@ -1,12 +1,40 @@
+import { Ionicons } from '@expo/vector-icons';
 import { FC } from 'react';
-import { Text, View } from 'react-native';
-import { ProductInterface } from '../../../../shared/interfaces/product';
-import { useProductCardViewModel } from './useProductCard.viewModel';
+import { Image, Text, TouchableOpacity, View } from 'react-native';
 
-export const ProductCardView: FC<ReturnType<typeof useProductCardViewModel>> = ({ product }) => {
+import { colors } from '../../../../styles/colors';
+import { useProductCardViewModel } from './useProductCard.viewModel';
+import { AppPriceText } from '../../../../shared/components/AppPriceText';
+
+export const ProductCardView: FC<ReturnType<typeof useProductCardViewModel>> = ({
+  product,
+  formatRating,
+}) => {
   return (
-    <View>
-      <Text>{product.name}</Text>
-    </View>
+    <TouchableOpacity className="my-1 mb-2 h-[157px] w-[48%] overflow-hidden rounded-xl bg-white p-[4px] shadow-sm">
+      <View>
+        <Image
+          source={{ uri: product.photo }}
+          className="h-[96px] w-full rounded-md"
+          resizeMode="cover"
+        />
+        <View className="absolute right-0 top-0 flex-row items-center rounded-b-lg rounded-r-none bg-white px-2 py-1">
+          <Ionicons name="star" size={12} color={colors['blue-base']} />
+          <Text className="ml-1 text-sm font-semibold">{formatRating}</Text>
+        </View>
+      </View>
+      <View className="p-3">
+        <Text className="mb-1 text-xs font-semibold" numberOfLines={1}>
+          {product.name}
+        </Text>
+        <View className="flex-row items-center justify-between">
+          <AppPriceText
+            classNameCurrency="text-sm"
+            classNameValue="text-lg font-bold flex-1"
+            value={Number(product.value)}
+          />
+        </View>
+      </View>
+    </TouchableOpacity>
   );
 };
