@@ -6,6 +6,7 @@ import '../styles/global.css';
 import { AppModal } from '../shared/components/AppModal';
 
 import ToastManager from 'toastify-react-native';
+import { useUserStore } from '../shared/store/user-store';
 const queryClient = new QueryClient();
 
 export default function RootLayout() {

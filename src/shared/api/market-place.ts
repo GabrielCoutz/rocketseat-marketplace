@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios, { AxiosInstance } from 'axios';
 import { Platform } from 'react-native';
 
-import { IUserStore } from '../store/user-store';
+import { IUserStore, useUserStore } from '../store/user-store';
 
 const getBaseURL = () => {
   return Platform.select({
@@ -46,6 +46,65 @@ export class MarketPlaceApiClient {
         return Promise.reject(error);
       }
     );
+
+    this.instance.interceptors.response.use(
+      async (response) => response,
+      async (error) => {
+        const originalRequest = error.config;
+
+        if (
+          error?.response?.status === 401 &&
+          error?.response?.data?.message === 'Token expirado' &&
+          !this.isRefreshing
+        ) {
+          this.isRefreshing = true;
+
+          try {
+            const userData = await AsyncStorage.getItem('marketplace-user-store');
+
+            if (!userData) throw new Error('No user data found');
+
+            const user: IUserStore = JSON.parse(userData);
+
+            const response = await this.instance.post('/auth/refresh', {
+              refreshToken: user.refreshToken,
+            });
+
+            const { token, refreshToken } = response.data;
+
+            const updatedUser = {
+              ...user,
+              token,
+              refreshToken,
+            };
+
+            await AsyncStorage.setItem('marketplace-user-store', JSON.stringify(updatedUser));
+
+            originalRequest.headers['Authorization'] = `Bearer ${token}`;
+
+            return this.instance(originalRequest);
+          } catch (error) {
+            this.handleUnauthorized();
+            return Promise.reject(new Error('Sessão expirada. Faça login novamente.'));
+          } finally {
+            this.isRefreshing = false;
+          }
+        }
+
+        if (!!error?.response?.data)
+          return Promise.reject(
+            new Error(error.response.data.message || 'Ocorreu um erro. Tente novamente.')
+          );
+        else return Promise.reject(new Error('Ocorreu um erro. Tente novamente.'));
+      }
+    );
+  }
+
+  private async handleUnauthorized() {
+    const { logout } = useUserStore.getState();
+
+    delete this.instance.defaults.headers.common['Authorization'];
+    logout();
   }
 }
 
