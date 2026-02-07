@@ -10,7 +10,7 @@ import { CameraType } from 'expo-image-picker';
 import { useUploadAvatarMutation } from '../../shared/queries/auth/use-upload-avatar.mutation';
 
 export const useRegisterViewModel = () => {
-  const [avatarUri, setAvatarUri] = useState<string | null>(null);
+  const [avatarUri, setAvatarUri] = useState<string | undefined>(undefined);
   const uploadAvatarMutation = useUploadAvatarMutation();
   const { setSession, updateUser } = useUserStore();
   const { handleSelectImage } = useImage({
@@ -34,6 +34,7 @@ export const useRegisterViewModel = () => {
       phone: '',
     },
   });
+  console.log(errors);
 
   const userRegisterMutation = useRegisterMutation({
     onSuccess: async () => {
@@ -50,7 +51,7 @@ export const useRegisterViewModel = () => {
   const onSubmit = handleSubmit(async (userData) => {
     const { confirmPassword, ...registerData } = userData;
 
-    await userRegisterMutation.mutateAsync(registerData);
+    await userRegisterMutation.mutateAsync(registerData as any);
   });
 
   return {

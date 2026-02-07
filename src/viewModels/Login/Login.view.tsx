@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { FC } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { AppButton } from '../../shared/components/AppButton';
 import { AppInputController } from '../../shared/components/AppInputController';
 import { AuthFormHeader } from '../../shared/components/AuthFormHeader';
@@ -41,7 +41,7 @@ export const LoginView: FC<ReturnType<typeof useLoginViewModel>> = ({ control, o
           <AppButton
             variant="outlined"
             rightIcon="arrow-forward"
-            onPress={() => router.push('/register')}>
+            onPress={() => router.push('/(public)/register')}>
             Registro
           </AppButton>
         </View>

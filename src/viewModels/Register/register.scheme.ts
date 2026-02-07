@@ -14,7 +14,6 @@ export const registerScheme = Yup.object().shape({
   phone: Yup.string()
     .required('Telefone é obrigatório')
     .matches(/^\d{11}$/, 'Número de telefone inválido'),
-  avatarUrl: Yup.string().url('URL inválida').required('URL do avatar é obrigatória'),
 });
 
 export type IRegisterFormData = Yup.InferType<typeof registerScheme>;

@@ -83,7 +83,7 @@ export const RegisterView: FC<ReturnType<typeof useRegisterViewModel>> = ({
 
         <View className="mt-16">
           <Text className="mb-6 text-base text-gray-300">Já tem uma conta?</Text>
-          <AppButton variant="outlined" onPress={() => router.push('/login')}>
+          <AppButton variant="outlined" onPress={() => router.push('/(public)/login')}>
             Login
           </AppButton>
         </View>
