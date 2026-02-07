@@ -11,22 +11,27 @@ export const useHomeViewModel = () => {
     refetch,
     isRefetching,
   } = useProductInfiniteQuery();
-  console.log({ products });
 
   const handleLoadMore = () => {
-    if (hasNextPage && !isFetchingNextPage && !isLoading) {
-      fetchNextPage();
-    }
+    if (hasNextPage && !isFetchingNextPage && !isLoading) fetchNextPage();
   };
 
   const handleRefresh = async () => {
     await refetch();
   };
 
+  const handleEndReached = () => {
+    handleLoadMore();
+  };
+
   return {
     handleLoadMore,
     handleRefresh,
+    handleEndReached,
     products,
     isRefetching,
+    isLoading,
+    hasNextPage,
+    isFetchingNextPage,
   };
 };

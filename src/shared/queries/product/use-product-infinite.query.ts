@@ -22,10 +22,10 @@ export const useProductInfiniteQuery = () => {
           },
         });
 
-        console.log({ response });
-
         return response;
       } catch (error) {
+        console.log(error);
+
         throw error;
       }
     },
@@ -35,18 +35,16 @@ export const useProductInfiniteQuery = () => {
     initialPageParam: 1,
     queryKey: ['products'],
   });
-  console.log({ data });
 
   const products = data?.pages
     .flatMap((page) => page.data)
     .map((product) => ({
       ...product,
-      imageUrl: buildImageUrl(product.photo),
+      photo: buildImageUrl(product.photo),
     }));
 
   return {
     products,
-    data,
     error,
     fetchNextPage,
     hasNextPage,

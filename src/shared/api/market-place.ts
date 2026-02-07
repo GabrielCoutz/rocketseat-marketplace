@@ -1,8 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios, { AxiosInstance } from 'axios';
 import { Platform } from 'react-native';
-
-import { IUserStore, useUserStore } from '../store/user-store';
+import { useUserStore } from '../store/user-store';
 
 const getBaseURL = () => {
   return Platform.select({
@@ -15,7 +14,7 @@ export const baseURL = getBaseURL();
 
 export class MarketPlaceApiClient {
   private instance: AxiosInstance;
-  private isRefreshing: boolean = false;
+  private isRefreshing = false;
 
   constructor() {
     this.instance = axios.create({
@@ -32,12 +31,15 @@ export class MarketPlaceApiClient {
   private setupInterceptors() {
     this.instance.interceptors.request.use(
       async (config) => {
-        const userData = await AsyncStorage.getItem('marketplace-user-store');
+        const userData = await AsyncStorage.getItem('marketplace-auth');
+        if (userData) {
+          const {
+            state: { token },
+          } = JSON.parse(userData);
 
-        if (!!userData) {
-          const user: IUserStore = JSON.parse(userData);
-
-          config.headers['Authorization'] = `Bearer ${user.token}`;
+          if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+          }
         }
 
         return config;
@@ -48,54 +50,60 @@ export class MarketPlaceApiClient {
     );
 
     this.instance.interceptors.response.use(
-      async (response) => response,
+      (response) => response,
       async (error) => {
+        alert('CAIU NO REFRESH');
         const originalRequest = error.config;
 
         if (
-          error?.response?.status === 401 &&
-          error?.response?.data?.message === 'Token expirado' &&
+          error.response?.status === 401 &&
+          error.response?.data?.message === 'Token expirado' &&
           !this.isRefreshing
         ) {
           this.isRefreshing = true;
 
           try {
-            const userData = await AsyncStorage.getItem('marketplace-user-store');
+            const userData = await AsyncStorage.getItem('marketplace-auth');
 
-            if (!userData) throw new Error('No user data found');
+            if (!userData) {
+              throw new Error('Usuário não autenticado');
+            }
 
-            const user: IUserStore = JSON.parse(userData);
+            const {
+              state: { refreshToken },
+            } = JSON.parse(userData);
 
-            const response = await this.instance.post('/auth/refresh', {
-              refreshToken: user.refreshToken,
+            if (!refreshToken) {
+              throw new Error('Refresh token não encontrado');
+            }
+
+            const { data: response } = await this.instance.post('/auth/refresh', {
+              refreshToken,
             });
 
-            const { token, refreshToken } = response.data;
+            const currentUserData = JSON.parse(userData);
 
-            const updatedUser = {
-              ...user,
-              token,
-              refreshToken,
-            };
+            currentUserData.state.token = response.token;
+            currentUserData.state.refreshToken = response.refreshToken;
 
-            await AsyncStorage.setItem('marketplace-user-store', JSON.stringify(updatedUser));
+            await AsyncStorage.setItem('marketplace-auth', JSON.stringify(currentUserData));
 
-            originalRequest.headers['Authorization'] = `Bearer ${token}`;
+            originalRequest.headers.Authorization = `Bearer ${response.token}`;
 
             return this.instance(originalRequest);
-          } catch (error) {
+          } catch {
             this.handleUnauthorized();
-            return Promise.reject(new Error('Sessão expirada. Faça login novamente.'));
+            return Promise.reject(new Error('Sessão expirada, faça o login novamente.'));
           } finally {
             this.isRefreshing = false;
           }
         }
 
-        if (!!error?.response?.data)
-          return Promise.reject(
-            new Error(error.response.data.message || 'Ocorreu um erro. Tente novamente.')
-          );
-        else return Promise.reject(new Error('Ocorreu um erro. Tente novamente.'));
+        if (error.response && error.response.data) {
+          return Promise.reject(new Error(error.response.data.message));
+        } else {
+          return Promise.reject(new Error('Falha na requisição'));
+        }
       }
     );
   }
@@ -103,7 +111,7 @@ export class MarketPlaceApiClient {
   private async handleUnauthorized() {
     const { logout } = useUserStore.getState();
 
-    delete this.instance.defaults.headers.common['Authorization'];
+    delete this.instance.defaults.headers.common.Authorization;
     logout();
   }
 }

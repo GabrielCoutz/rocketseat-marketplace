@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { FC } from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
+
 import { colors } from '../../../../styles/colors';
 import { useProductCardViewModel } from './useProductCard.viewModel';
 

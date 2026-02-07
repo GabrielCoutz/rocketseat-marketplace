@@ -1,57 +1,52 @@
-import { IUser } from '../interfaces/user';
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { create } from 'zustand';
+import { createJSONStorage, persist } from 'zustand/middleware';
+import { UserInterface } from '../interfaces/user';
 
-interface ISetSessionPayload {
-  user: IUser;
+interface SetSessionParams {
+  user: UserInterface;
   token: string;
   refreshToken: string;
 }
 
-interface IUpdateTokensPayload {
+interface UpdateTokensParams {
   token: string;
   refreshToken: string;
 }
 
-export interface IUserStore {
-  user: IUser | null;
+export interface UserStore {
+  user: UserInterface | null;
   token: string | null;
   refreshToken: string | null;
 
-  setSession: (payload: ISetSessionPayload) => Promise<void>;
-  logout: VoidFunction;
-  updateTokens: (payload: IUpdateTokensPayload) => void;
-  updateUser: (payload: Partial<IUser>) => void;
+  setSession: (sessionData: SetSessionParams) => void;
+  logout: () => void;
+  updateTokens: (updateTokensParams: UpdateTokensParams) => void;
+  updateUser: (updatedUserData: Partial<UserInterface>) => void;
 }
 
-export const useUserStore = create<IUserStore>()(
+export const useUserStore = create<UserStore>()(
   persist(
     (set) => ({
       user: null,
       token: null,
       refreshToken: null,
 
-      setSession: async (payload) => {
-        set(payload);
-
-        await AsyncStorage.setItem('user', JSON.stringify(payload));
+      logout: () => set({ user: null, token: null, refreshToken: null }),
+      setSession: (sessionData) => {
+        set({ ...sessionData });
       },
-      updateTokens: (payload) => set(payload),
-      logout: () =>
-        set({
-          user: null,
-          token: null,
-          refreshToken: null,
-        }),
-      updateUser: (payload) =>
+      updateTokens: (updateTokensParams) => {
+        set({ ...updateTokensParams });
+      },
+      updateUser: (updatedUserData) => {
         set((state) => ({
-          user: state.user ? { ...state.user, ...payload } : null,
-        })),
+          user: state.user ? { ...state.user, ...updatedUserData } : null,
+        }));
+      },
     }),
-
     {
-      name: 'marketplace-user-store',
+      name: 'marketplace-auth',
       storage: createJSONStorage(() => AsyncStorage),
     }
   )
