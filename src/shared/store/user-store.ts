@@ -1,10 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
-import { UserInterface } from '../interfaces/user';
+import { IUser } from '../interfaces/user';
 
 interface SetSessionParams {
-  user: UserInterface;
+  user: IUser;
   token: string;
   refreshToken: string;
 }
@@ -15,14 +15,14 @@ interface UpdateTokensParams {
 }
 
 export interface UserStore {
-  user: UserInterface | null;
+  user: IUser | null;
   token: string | null;
   refreshToken: string | null;
 
   setSession: (sessionData: SetSessionParams) => void;
   logout: () => void;
   updateTokens: (updateTokensParams: UpdateTokensParams) => void;
-  updateUser: (updatedUserData: Partial<UserInterface>) => void;
+  updateUser: (updatedUserData: Partial<IUser>) => void;
 }
 
 export const useUserStore = create<UserStore>()(
