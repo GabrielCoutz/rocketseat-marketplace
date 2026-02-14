@@ -4,10 +4,15 @@ import { Image, Text, TouchableOpacity, View } from 'react-native';
 
 import { colors } from '../../../../styles/colors';
 import { useProductCardViewModel } from './useProductCard.viewModel';
+import { useRouter } from 'expo-router';
 
 export const ProductCardView: FC<ReturnType<typeof useProductCardViewModel>> = ({ product }) => {
+  const { push } = useRouter();
+
   return (
-    <TouchableOpacity className="my-1 mb-2 h-[157px] w-[48%] overflow-hidden rounded-xl bg-white p-[4px] shadow-sm">
+    <TouchableOpacity
+      className="my-1 mb-2 h-[157px] w-[48%] overflow-hidden rounded-xl bg-white p-[4px] shadow-sm"
+      onPress={() => push(`/product/${product.id}`)}>
       <View>
         <Image
           source={{ uri: product.photo }}

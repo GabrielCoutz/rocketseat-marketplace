@@ -1,7 +1,5 @@
-import { FlatList, RefreshControl, Text, View } from 'react-native';
+import { FlatList, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { HomeHeader } from './components/Header';
-import { SearchInput } from './components/SearchInput';
 
 import { ProductCardView } from './components/ProductCard';
 import { useHomeViewModel } from './useHome.viewModel';
@@ -25,7 +23,7 @@ export const HomeView: FC<ReturnType<typeof useHomeViewModel>> = ({
     <SafeAreaView edges={['top']} className="flex-1">
       <FlatList
         data={products}
-        renderItem={({ item }) => <ProductCardView product={item} />}
+        renderItem={({ item }) => <ProductCardView product={item} formatRating="" />}
         keyExtractor={({ id }) => `product-list-item-${id}`}
         numColumns={2}
         onEndReached={handleEndReached}
