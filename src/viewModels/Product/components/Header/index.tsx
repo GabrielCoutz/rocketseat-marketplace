@@ -10,9 +10,10 @@ import { colors } from '../../../../styles/colors';
 
 interface HeaderParams {
   productDetails: GetProductDetailsInterface;
+  onOpenReviewBottomSheet: () => void;
 }
 
-export const Header: FC<HeaderParams> = ({ productDetails }) => {
+export const Header: FC<HeaderParams> = ({ productDetails, onOpenReviewBottomSheet }) => {
   return (
     <>
       <View className="items-start pb-5">
@@ -26,7 +27,7 @@ export const Header: FC<HeaderParams> = ({ productDetails }) => {
       <View className="w-full rounded-lg bg-white shadow-xl shadow-gray-500/30">
         <Image
           source={{
-            uri: buildImageUrl(productDetails.photo),
+            uri: productDetails.photo,
           }}
           className="h-[192px] w-full rounded-lg"
         />
@@ -87,7 +88,7 @@ export const Header: FC<HeaderParams> = ({ productDetails }) => {
         <View className="flex-row items-center justify-between border-t border-gray-200 py-4">
           <Text className="text-base font-bold text-gray-800">Avaliações</Text>
 
-          <TouchableOpacity>
+          <TouchableOpacity onPress={onOpenReviewBottomSheet}>
             <Text className="text-base font-medium text-purple-base">Avaliar</Text>
           </TouchableOpacity>
         </View>

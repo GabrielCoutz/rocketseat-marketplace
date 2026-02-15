@@ -1,7 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
 import { createElement } from 'react';
 import { SelectionModal, SelectionModalProps } from '../components/Modals/SelectionModal';
+import { SuccessModal, SuccessModalParams } from '../components/Modals/SuccessMode';
 import { useModalStore } from '../store/modal-store';
+
+export type SelectionVariant = 'primary' | 'secondary' | 'danger';
 
 export interface SelectionOption {
   text: string;
@@ -9,8 +12,6 @@ export interface SelectionOption {
   icon?: keyof typeof Ionicons.glyphMap;
   variant?: SelectionVariant;
 }
-
-export type SelectionVariant = 'primary' | 'secondary' | 'danger';
 
 export const useAppModal = () => {
   const { open, close } = useModalStore();
@@ -32,5 +33,19 @@ export const useAppModal = () => {
       } as SelectionModalProps)
     );
   };
-  return { showSelection };
+
+  const showSuccess = (config: SuccessModalParams) => {
+    open(
+      createElement(SuccessModal, {
+        ...config,
+        onButtonPress: () => {
+          if (config.onButtonPress) {
+            config.onButtonPress();
+          }
+          close();
+        },
+      })
+    );
+  };
+  return { showSelection, showSuccess };
 };

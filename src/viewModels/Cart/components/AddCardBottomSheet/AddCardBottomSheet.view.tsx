@@ -1,0 +1,101 @@
+import { Ionicons } from '@expo/vector-icons';
+import { FC } from 'react';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { AppButton } from '../../../../shared/components/AppButton';
+import { AppInput } from '../../../../shared/components/AppInput';
+import { AppInputController } from '../../../../shared/components/AppInputController';
+import { colors } from '../../../../styles/colors';
+import { CreditCard } from './components/CreditCard';
+import { useAddCardBottomSheetViewModel } from './useAddCardBottomSheet.viewModel';
+
+export const AddCardBottomSheetView: FC<ReturnType<typeof useAddCardBottomSheetViewModel>> = ({
+  handleCreateCreditCard,
+  control,
+  expirationDateMask,
+  cardNumberMask,
+  isFlipped,
+  handleFieldFocus,
+  handleFieldBlur,
+  focusedField,
+  cardData,
+  closeBottomSheet,
+}) => {
+  return (
+    <ScrollView className="flex-1">
+      <View className="p-8">
+        <View className="mb-6 flex-row items-center justify-between">
+          <Text className="text-base font-bold text-gray-500">Adicionar cartão</Text>
+          <TouchableOpacity className="w-8 items-center justify-center rounded-[10px] border border-gray-400">
+            <Ionicons name="close-outline" size={24} color={colors.gray[400]} />
+          </TouchableOpacity>
+        </View>
+
+        <CreditCard isFlipped={isFlipped} focusedField={focusedField} cardData={cardData} />
+
+        <View className="mt-6 gap-4">
+          <AppInputController
+            control={control}
+            name="titularName"
+            leftIcon="person-outline"
+            label="NOME DO TITULAR"
+            placeholder="Nome completo"
+            onFocus={() => handleFieldFocus('name')}
+            onBlur={handleFieldBlur}
+          />
+          <AppInputController
+            control={control}
+            name="number"
+            leftIcon="card-outline"
+            label="NÚMERO"
+            placeholder="Número do cartão"
+            keyboardType="numeric"
+            mask={cardNumberMask}
+            maxLength={19}
+            onFocus={() => handleFieldFocus('number')}
+            onBlur={handleFieldBlur}
+          />
+          <View className="flex-row gap-4">
+            <View className="flex-1">
+              <AppInputController
+                control={control}
+                name="expirationDate"
+                leftIcon="calendar-outline"
+                label="VENCIMENTO"
+                placeholder="MM/AA"
+                keyboardType="numeric"
+                maxLength={5}
+                mask={expirationDateMask}
+                onFocus={() => handleFieldFocus('expiry')}
+                onBlur={handleFieldBlur}
+              />
+            </View>
+            <View className="flex-1">
+              <AppInputController
+                control={control}
+                name="CVV"
+                leftIcon="lock-closed-outline"
+                label="CVV"
+                placeholder="000"
+                keyboardType="numeric"
+                onFocus={() => handleFieldFocus('cvv')}
+                onBlur={handleFieldBlur}
+                maxLength={3}
+              />
+            </View>
+          </View>
+        </View>
+
+        <View className="mt-8 flex-row gap-4 pb-5">
+          <View className="flex-1">
+            <AppButton variant="outlined" onPress={closeBottomSheet}>
+              Cancelar
+            </AppButton>
+          </View>
+          <View className="flex-1">
+            <AppButton onPress={handleCreateCreditCard}>Salvar</AppButton>
+          </View>
+        </View>
+      </View>
+    </ScrollView>
+  );
+};

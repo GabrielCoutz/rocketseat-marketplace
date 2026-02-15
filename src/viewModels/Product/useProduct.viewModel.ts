@@ -5,6 +5,8 @@ import { useGetProductDetails } from '../../shared/queries/product/use-get-produ
 import { useCartStore } from '../../shared/store/cart-store';
 import { useModalStore } from '../../shared/store/modal-store';
 import { AddToCartSuccessModal } from './components/AddToCartSuccessModal';
+import { useBottomSheetStore } from '../../shared/store/bottomsheet-store';
+import { ReviewBottomSheet } from './components/ReviewBottomSheet';
 
 export const useProductViewModel = (productId: number) => {
   const { data: productDetails, isLoading, error } = useGetProductDetails(productId);
@@ -21,7 +23,7 @@ export const useProductViewModel = (productId: number) => {
   } = useGetProductCommentsInfiniteQuery(productId);
 
   const { addProduct } = useCartStore();
-
+  const { open: openBottomSheet } = useBottomSheetStore();
   const { open, close } = useModalStore();
 
   const handleLoadMore = () => {
@@ -43,6 +45,14 @@ export const useProductViewModel = (productId: number) => {
   const onGoToCart = () => {
     router.push('/(private)/(tabs)/cart');
     close();
+  };
+
+  const handleOpenReviewBottomSheet = () => {
+    if (!productDetails) return;
+
+    openBottomSheet({
+      content: createElement(ReviewBottomSheet, { productId }),
+    });
   };
 
   const onContinueShopping = () => {
@@ -83,5 +93,6 @@ export const useProductViewModel = (productId: number) => {
     isRefetching,
     isFetchingNextPage,
     handleAddToCart,
+    handleOpenReviewBottomSheet,
   };
 };
