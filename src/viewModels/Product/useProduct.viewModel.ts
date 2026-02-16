@@ -1,4 +1,4 @@
-import { createElement } from "react";
+import { createElement, useEffect } from "react";
 import { useGetCommentsInfiniteQuery } from "../../shared/queries/product/use-get-product-comments-infinite.query";
 import { useGetProductDetailQuery } from "../../shared/queries/product/use-get-product-detail";
 import { useCartStore } from "../../shared/store/cart-store";
@@ -9,7 +9,10 @@ import { useBottomSheetStore } from "../../shared/store/bottomsheet-store";
 import { ReviewBottomSheet } from "./components/ReviewBttomSheet";
 import { localNotificationsService } from "../../shared/services/local-notifications.service";
 
-export const useProductViewModel = (productId: number) => {
+export const useProductViewModel = (
+  productId: number,
+  openFeedbackBottomsheet?: boolean,
+) => {
   const {
     data: productDetails,
     isLoading,
@@ -93,6 +96,10 @@ export const useProductViewModel = (productId: number) => {
       }),
     });
   };
+
+  useEffect(() => {
+    if (openFeedbackBottomsheet) handleOpenReview();
+  }, [openFeedbackBottomsheet, productDetails]);
 
   return {
     isLoading,

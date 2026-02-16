@@ -62,7 +62,7 @@ const scheduleCartReminder = async ({
     },
     trigger: {
       type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-      seconds: delayInMinutes * 60,
+      seconds: 5,
     },
   });
 };
@@ -83,12 +83,12 @@ const scheduleFeedbackNotification = async ({
       data: {
         type: "purchase-feedback",
         productId,
-        deepLink: `${DEEP_LINK}product/${productId}`,
+        deepLink: `${DEEP_LINK}product/${productId}?openFeedbackBottomsheet=true`,
       },
     },
     trigger: {
       type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-      seconds: delayInMinutes * 60,
+      seconds: 5,
     },
   });
 };
