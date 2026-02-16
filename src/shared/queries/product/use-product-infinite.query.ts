@@ -1,13 +1,16 @@
-import { useInfiniteQuery } from '@tanstack/react-query';
-import { getProducts } from '../../services/product.service';
-import { buildImageUrl } from '../../helpers/buildImageUrl';
-import { FilterState } from '../../store/use-filter-store';
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { getProducts } from "../../services/product.service";
+import { FilterState } from "../../store/use-filter-store";
+import { BuildImageUrl } from "../../helpers/buildImageUrl";
+import { ProductInterface } from "../../interfaces/product";
 
-interface ProductsInfinityQueryParams {
+interface productsInfinityQueryParam {
   filters?: FilterState;
 }
 
-export const useProductInfiniteQuery = ({ filters }: ProductsInfinityQueryParams) => {
+export const useProductIninityQuery = ({
+  filters,
+}: productsInfinityQueryParam) => {
   const {
     data,
     error,
@@ -18,7 +21,7 @@ export const useProductInfiniteQuery = ({ filters }: ProductsInfinityQueryParams
     refetch,
     isRefetching,
   } = useInfiniteQuery({
-    queryFn: async ({ pageParam }) => {
+    queryFn: async ({ pageParam = 1 }) => {
       try {
         const response = await getProducts({
           pagination: {
@@ -35,24 +38,25 @@ export const useProductInfiniteQuery = ({ filters }: ProductsInfinityQueryParams
 
         return response;
       } catch (error) {
-        console.log(error);
-
         throw error;
       }
     },
     getNextPageParam: (lastPage) => {
-      return lastPage.page < lastPage.totalPages ? lastPage.page + 1 : undefined;
+      return lastPage.page < lastPage.totalPages
+        ? lastPage.page + 1
+        : undefined;
     },
     initialPageParam: 1,
-    queryKey: ['products', filters],
+    queryKey: ["products", filters],
+    staleTime: 1000 * 60 * 1,
   });
 
   const products = data?.pages
     .flatMap((page) => page.data)
     .map((product) => ({
       ...product,
-      photo: buildImageUrl(product.photo),
-    }));
+      photo: BuildImageUrl(product.photo),
+    })) as ProductInterface[];
 
   return {
     products,

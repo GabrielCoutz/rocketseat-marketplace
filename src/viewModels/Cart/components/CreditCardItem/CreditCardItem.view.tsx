@@ -1,9 +1,9 @@
-import { Ionicons } from '@expo/vector-icons';
-import { FC } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
-import { CreditCard } from '../../../../shared/interfaces/credit-card';
-import { colors } from '../../../../styles/colors';
-import { useCreditCardItemViewModel } from './useCreditCardItem.viewModel';
+import { Ionicons } from "@expo/vector-icons";
+import { Text, TouchableOpacity, View } from "react-native";
+import { colors } from "../../../../styles/colors";
+import { FC } from "react";
+import { useCreditCardItemViewModel } from "./useCreditCardItem.viewModel";
+import { CreditCard } from "../../../../shared/interfaces/credit-card";
 
 export const CreditCardItemView: FC<
   ReturnType<typeof useCreditCardItemViewModel> & {
@@ -12,27 +12,37 @@ export const CreditCardItemView: FC<
   }
 > = ({
   creditCard,
-  formattedExpirationDate,
-  formattedCardNumber,
+  formatedExpirationDate,
+  formatedCardNumber,
   isSelected,
   setSelectedCreditCard,
 }) => {
   return (
     <TouchableOpacity
+      activeOpacity={0.8}
       onPress={() => setSelectedCreditCard(creditCard)}
-      className={`rounded-lg border bg-white p-4 ${isSelected ? 'border-purple-base' : 'border-gray-100'}`}>
-      <View className="flex-row justify-center">
+      className={`p-4 rounded-lg border-[1px] bg-white ${
+        isSelected ? "border-purple-base" : "border-gray-100"
+      }`}
+    >
+      <View className="flex-row justify-between">
         <View className="mr-4">
-          <Ionicons name="card-outline" size={24} color={colors['purple-base']} />
+          <Ionicons
+            name="card-outline"
+            size={24}
+            color={colors["purple-base"]}
+          />
         </View>
 
         <View className="flex-1">
-          <Text className="text-base">Cartão final {formattedCardNumber}</Text>
-          <Text className="mt-1 text-sm text-gray-500">{formattedExpirationDate}</Text>
+          <Text className="text-base">Cartão final {formatedCardNumber}</Text>
+          <Text className="text-sm text-gray-500 mt-1">
+            {formatedExpirationDate}
+          </Text>
         </View>
 
         <TouchableOpacity>
-          <Ionicons name="pencil" size={18} color={colors['purple-base']} />
+          <Ionicons color={colors["purple-base"]} name="pencil" size={18} />
         </TouchableOpacity>
       </View>
     </TouchableOpacity>

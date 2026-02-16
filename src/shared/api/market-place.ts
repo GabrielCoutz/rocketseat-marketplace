@@ -1,37 +1,43 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios, { AxiosInstance } from 'axios';
-import { Platform } from 'react-native';
-import { useUserStore } from '../store/user-store';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
+import { Platform } from "react-native";
+import Constants from "expo-constants";
 
 const getBaseURL = () => {
-  return Platform.select({
-    ios: 'http://localhost:3001',
-    android: 'http://10.0.2.2:3001',
-  });
+  const isProduction = Constants.expoConfig?.extra?.isProduction || false;
+
+  if (isProduction) {
+    return process.env.EXPO_PUBLIC_API_URL_PROD;
+  } else {
+    return Platform.select({
+      ios: "http://localhost:3001",
+      android: "http://10.0.2.2:3001",
+    });
+  }
 };
 
 export const baseURL = getBaseURL();
 
-export class MarketPlaceApiClient {
+class ApiClient {
   private instance: AxiosInstance;
   private isRefreshing = false;
 
   constructor() {
     this.instance = axios.create({
       baseURL,
+      timeout: 10000,
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
 
     this.setupInterceptors();
   }
 
-  getInstance() {
-    return this.instance;
-  }
-
   private setupInterceptors() {
     this.instance.interceptors.request.use(
       async (config) => {
-        const userData = await AsyncStorage.getItem('marketplace-auth');
+        const userData = await AsyncStorage.getItem("marketplace-auth");
         if (userData) {
           const {
             state: { token },
@@ -50,22 +56,26 @@ export class MarketPlaceApiClient {
     );
 
     this.instance.interceptors.response.use(
-      (response) => response,
+      (response: AxiosResponse) => {
+        return response;
+      },
       async (error) => {
         const originalRequest = error.config;
 
         if (
           error.response?.status === 401 &&
-          error.response?.data?.message === 'Token expirado' &&
+          error.response?.data?.message === "Token expirado" &&
+          !originalRequest._retry &&
           !this.isRefreshing
         ) {
+          originalRequest._retry = true;
           this.isRefreshing = true;
 
           try {
-            const userData = await AsyncStorage.getItem('marketplace-auth');
+            const userData = await AsyncStorage.getItem("marketplace-auth");
 
             if (!userData) {
-              throw new Error('Usuário não autenticado');
+              throw new Error("Usuário não autenticado");
             }
 
             const {
@@ -73,46 +83,70 @@ export class MarketPlaceApiClient {
             } = JSON.parse(userData);
 
             if (!refreshToken) {
-              throw new Error('Refresh token não encontrado');
+              throw new Error("Refresh token não encontrado");
             }
 
-            const { data: response } = await this.instance.post('/auth/refresh', {
+            const response = await this.instance.post("/auth/refresh", {
               refreshToken,
             });
 
+            const { token: newToken, refreshToken: newRefreshToken } =
+              response.data;
+
             const currentUserData = JSON.parse(userData);
+            currentUserData.state.token = newToken;
+            currentUserData.state.refreshToken = newRefreshToken;
 
-            currentUserData.state.token = response.token;
-            currentUserData.state.refreshToken = response.refreshToken;
+            await AsyncStorage.setItem(
+              "marketplace-auth",
+              JSON.stringify(currentUserData)
+            );
 
-            await AsyncStorage.setItem('marketplace-auth', JSON.stringify(currentUserData));
-
-            originalRequest.headers.Authorization = `Bearer ${response.token}`;
-
+            originalRequest.headers.Authorization = `Bearer ${newToken}`;
             return this.instance(originalRequest);
-          } catch {
+          } catch (refreshError) {
             this.handleUnauthorized();
-            return Promise.reject(new Error('Sessão expirada, faça o login novamente.'));
+            return Promise.reject(
+              new Error("Sessão expirada. Faça login novamente.")
+            );
           } finally {
             this.isRefreshing = false;
           }
         }
 
+        if (error.response?.status === 401) {
+          this.handleUnauthorized();
+        }
+
         if (error.response && error.response.data) {
           return Promise.reject(new Error(error.response.data.message));
         } else {
-          return Promise.reject(new Error('Falha na requisição'));
+          return Promise.reject(new Error("Falha na requisição!"));
         }
       }
     );
   }
 
   private async handleUnauthorized() {
-    const { logout } = useUserStore.getState();
+    delete this.instance.defaults.headers.common["Authorization"];
+    await AsyncStorage.removeItem("marketplace-auth");
+  }
 
-    delete this.instance.defaults.headers.common.Authorization;
-    logout();
+  setAuthToken(token: string) {
+    this.instance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+  }
+
+  removeAuthToken() {
+    delete this.instance.defaults.headers.common["Authorization"];
+  }
+
+  get defaults() {
+    return this.instance.defaults;
+  }
+
+  getInstance() {
+    return this.instance;
   }
 }
 
-export const marketPlaceApiClient = new MarketPlaceApiClient().getInstance();
+export const marketPlaceApiClient = new ApiClient().getInstance();

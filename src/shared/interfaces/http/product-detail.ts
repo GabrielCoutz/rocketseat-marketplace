@@ -1,4 +1,4 @@
-export interface GetProductDetailsInterface {
+export interface GetProductDetailInterface {
   id: number;
   value: string;
   name: string;

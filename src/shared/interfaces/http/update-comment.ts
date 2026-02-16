@@ -6,11 +6,11 @@ export interface UpdateCommentRequest {
 
 export interface UpdateCommentResponse {
   message: string;
-  ratingUpdated: boolean;
+  ratingUpdated: true;
   comment: {
     id: number;
     content: string;
-    createdAt: string;
-    updatedAt: string;
+    createdAt: Date;
+    updatedAt: Date;
   };
 }

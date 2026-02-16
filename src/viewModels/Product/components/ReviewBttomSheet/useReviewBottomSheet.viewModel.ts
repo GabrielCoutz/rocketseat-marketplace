@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
-import { Toast } from 'toastify-react-native';
-import { useCreateCommentMutation } from '../../../../shared/queries/comments/use-create-comment.mutation';
-import { useGetUserCommentQuery } from '../../../../shared/queries/comments/use-get-user-comment.query';
-import { useUpdateCommentMutation } from '../../../../shared/queries/comments/use-update-comment.mutation';
+import { useEffect, useState } from "react";
+import { useGetUserCommentQuery } from "../../../../shared/queries/comments/use-get-user-comment.query";
+import { useCreateCommentMutation } from "../../../../shared/queries/comments/use-create-comment.mutation";
+import { useUpdateCommentMutation } from "../../../../shared/queries/comments/use-update-comment.mutation";
+import { Toast } from "toastify-react-native";
+import { useBottomSheetStore } from "../../../../shared/store/bottomsheet-store";
 
 interface RatingFormInterface {
   content: string;
@@ -11,42 +12,42 @@ interface RatingFormInterface {
   commentId?: number;
 }
 
-const initialRatingForm: RatingFormInterface = {
-  content: '',
-  rating: 0,
+const initialFormValue: RatingFormInterface = {
+  content: "",
   isEditing: false,
+  rating: 0,
   commentId: undefined,
 };
 
 export const useReviewBottomSheetViewModel = (productId: number) => {
-  const [ratingForm, setRatingForm] = useState<RatingFormInterface>(initialRatingForm);
-  const { data: userComment, isLoading: isLoadingUserComment } = useGetUserCommentQuery(productId);
+  const [ratingForm, setRatingForm] = useState(initialFormValue);
+
+  const { data: userComment, isLoading: loadingUserComment } =
+    useGetUserCommentQuery(productId);
 
   const createCommentMutation = useCreateCommentMutation(productId);
 
   const updateCommentMutation = useUpdateCommentMutation(productId);
 
+  const { close: closeBottomSheet } = useBottomSheetStore();
+
   const handleRatingChange = (rating: number) => {
-    setRatingForm((prevData) => ({
-      ...prevData,
-      rating,
-    }));
+    setRatingForm((prevData) => ({ ...prevData, rating }));
   };
 
   const handleContentChange = (content: string) => {
-    setRatingForm((prevData) => ({
-      ...prevData,
-      content,
-    }));
+    setRatingForm((prevData) => ({ ...prevData, content }));
   };
 
   const handleFormSubmit = async () => {
     if (ratingForm.rating === 0) {
-      Toast.warn('Por favor, selecione uma nota.', 'top');
+      Toast.warn("Por favor, selecione uma nota.", "top");
+      return;
     }
 
     if (!ratingForm.content.trim()) {
-      Toast.warn('Por favor, escreva um comentário.', 'top');
+      Toast.warn("Por favor, escreva um comentário.", "top");
+      return;
     }
 
     const { isEditing, ...formData } = ratingForm;
@@ -58,11 +59,12 @@ export const useReviewBottomSheetViewModel = (productId: number) => {
       });
     } else {
       createCommentMutation.mutate({
-        ...formData,
+        content: formData.content,
         productId,
         rating: formData.rating,
       });
     }
+    closeBottomSheet();
   };
 
   useEffect(() => {
@@ -74,15 +76,16 @@ export const useReviewBottomSheetViewModel = (productId: number) => {
         commentId: userComment.comment.id,
       });
     } else {
-      setRatingForm(initialRatingForm);
+      setRatingForm(initialFormValue);
     }
   }, [userComment]);
 
-  const isLoading = createCommentMutation.isPending || updateCommentMutation.isPending;
+  const isLoading =
+    createCommentMutation.isPending || updateCommentMutation.isPending;
 
   return {
-    handleContentChange,
     handleRatingChange,
+    handleContentChange,
     ratingForm,
     handleFormSubmit,
     isLoading,

@@ -1,82 +1,55 @@
-import { useCallback, useState } from 'react';
-import * as ImagePicker from 'expo-image-picker';
-import { Toast } from 'toastify-react-native';
-import { Alert, Linking } from 'react-native';
+import * as ImagePicker from "expo-image-picker";
+import { useCallback, useState } from "react";
+import { Toast } from "toastify-react-native";
+import { ImagePickerOptions } from "expo-image-picker";
 
-interface IUseCameraProps {
-  aspect?: [number, number];
-  quality?: number;
-  allowEditing?: boolean;
-  exif?: boolean;
-}
-
-export const useCamera = ({ allowEditing, aspect, exif, quality }: IUseCameraProps) => {
+export const useCamera = (pickerOptions: ImagePickerOptions) => {
   const [isLoading, setIsLoading] = useState(false);
 
-  const requestCameraPermission = useCallback(async () => {
+  const requestCameraPermission = useCallback(async (): Promise<boolean> => {
     try {
       const { status } = await ImagePicker.requestCameraPermissionsAsync();
 
-      const granted = status === 'granted';
-      if (!granted)
-        Alert.alert(
-          'Permissão necessária',
-          'Precisamos de acesso à câmera para essa funcionalidade.',
-          [
-            {
-              text: 'Cancelar',
-              style: 'cancel',
-            },
-            {
-              text: 'Abrir Configurações',
-              onPress: () => Linking.openSettings(),
-            },
-          ]
-        );
+      const currentStatus = status === "granted";
 
-      return granted;
+      if (!currentStatus) {
+        Toast.error("Precisamos da permissão para acessar sua câmera", "top");
+      }
+
+      return currentStatus;
     } catch (error) {
-      Toast.error(
-        'Ocorreu um erro ao solicitar permissão para acessar a câmera. Tente novamente.',
-        'top'
-      );
+      Toast.error("Erro ao solicitar permissões da câmera", "top");
       return false;
     }
   }, []);
 
-  const openCamera = useCallback(async () => {
+  const openCamera = useCallback(async (): Promise<string | null> => {
     setIsLoading(true);
 
     try {
       const hasPermission = await requestCameraPermission();
+
       if (!hasPermission) return null;
 
-      const result = await ImagePicker.launchCameraAsync({
-        aspect,
-        quality,
-        allowsEditing: allowEditing,
-        exif,
-      });
+      const result = await ImagePicker.launchCameraAsync(pickerOptions);
 
-      if (!result.canceled && result?.assets?.length > 0) {
-        Toast.success('Imagem capturada com sucesso!', 'top');
-
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        Toast.success("Foto capturada com sucesso!", "top");
         return result.assets[0].uri;
       }
 
       return null;
     } catch (error) {
-      Toast.error('Não foi possível abrir a câmera. Tente novamente.', 'top');
-
+      Toast.error("Erro ao abrir câmera", "top");
       return null;
     } finally {
       setIsLoading(false);
     }
-  }, [allowEditing, aspect, exif, quality]);
+  }, []);
 
   return {
     requestCameraPermission,
-    openCamera,
     isLoading,
+    openCamera,
   };
 };

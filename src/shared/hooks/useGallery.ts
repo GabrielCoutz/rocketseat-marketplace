@@ -1,76 +1,70 @@
-import { ImagePickerOptions } from 'expo-image-picker';
-import { useState } from 'react';
+import { ImagePickerOptions } from "expo-image-picker";
+import { useCallback, useState } from "react";
+import * as ImagePicker from "expo-image-picker";
+import { Toast } from "toastify-react-native";
+import { Alert, Linking } from "react-native";
 
-import * as ImagePicker from 'expo-image-picker';
-import { Toast } from 'toastify-react-native';
-import { Alert, Linking } from 'react-native';
-
-export const useGallery = (props: ImagePickerOptions) => {
+export const useGallery = (pickerOptions: ImagePickerOptions) => {
   const [isLoading, setIsLoading] = useState(false);
 
-  const requestGalleryPermission = async () => {
-    setIsLoading(true);
+  const requestGalleryPermission = useCallback(async () => {
     try {
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== 'granted') {
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+      const currentStatus = status === "granted";
+
+      if (!currentStatus) {
         Alert.alert(
-          'Permissão necessária',
-          'Precisamos de acesso à galeria para selecionar uma imagem.',
+          "Permissão Negada!",
+          "Precisamos de permissão para acessar sua galeria de fotos",
           [
             {
-              text: 'Cancelar',
-              style: 'cancel',
+              text: "Cancelar",
+              style: "cancel",
             },
             {
-              text: 'Abrir Configurações',
-              onPress: () => Linking.openSettings(),
+              text: "Abrir configurações",
+              onPress: () => {
+                Linking.openSettings();
+              },
             },
           ]
         );
-
-        return false;
       }
 
-      return true;
+      return currentStatus;
     } catch (error) {
-      console.error('Error requesting gallery permission:', error);
-
-      Toast.error('Ocorreu um erro ao solicitar permissão para acessar a galeria.');
+      Toast.error("Erro ao solicitar permissões da câmera", "top");
       return false;
-    } finally {
-      setIsLoading(false);
     }
-  };
+  }, []);
 
-  const openGallery = async () => {
+  const openGallery = useCallback(async (): Promise<string | null> => {
     setIsLoading(true);
-
     try {
       const hasPermission = await requestGalleryPermission();
+
       if (!hasPermission) return null;
 
-      const result = await ImagePicker.launchImageLibraryAsync(props);
+      const result = await ImagePicker.launchImageLibraryAsync(pickerOptions);
 
-      if (!result.canceled && result?.assets?.length > 0) {
-        Toast.success('Imagem selecionada com sucesso!');
-
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        Toast.success("Foto selecionada com sucesso!", "top");
         return result.assets[0].uri;
       }
 
       return null;
     } catch (error) {
-      console.error('Error opening gallery:', error);
-      Toast.error('Ocorreu um erro ao abrir a galeria.');
-
+      Toast.error("Erro a selecionar a foto", "top");
       return null;
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   return {
-    isLoading,
     openGallery,
-    requestGalleryPermission,
+    isLoading,
   };
 };

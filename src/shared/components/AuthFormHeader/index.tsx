@@ -1,22 +1,24 @@
-import { FC } from 'react';
-import { Image, Text, View } from 'react-native';
+import { FC } from "react";
+import { Image, Text, View } from "react-native";
 
 interface AuthFormHeaderProps {
   title: string;
   subTitle: string;
 }
 
-export const AuthFormHeader: FC<AuthFormHeaderProps> = ({ title, subTitle }) => {
+export const AuthFormHeader: FC<AuthFormHeaderProps> = ({
+  subTitle,
+  title,
+}) => {
   return (
-    <View className="mb-8 items-center">
+    <View className="items-center mb-8">
       <Image
-        source={require('../../../assets/images/Logo.png')}
+        source={require("../../../assets/images/Logo.png")}
         resizeMode="contain"
-        className="mb-8 h-[60px] w-[80px]"
+        className="w-[80px] h-[60px] mb-8"
       />
-
-      <Text className="mb-3 text-3xl font-bold text-gray-500">{title}</Text>
-      <Text className="text-base text-gray-300">{subTitle}</Text>
+      <Text className="text-3xl font-bold mb-3 text-gray-500">{title}</Text>
+      <Text className="text-base text-gray-300 text-center">{subTitle}</Text>
     </View>
   );
 };

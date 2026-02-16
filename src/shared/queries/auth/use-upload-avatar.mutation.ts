@@ -1,16 +1,19 @@
-import { useMutation } from '@tanstack/react-query';
-import { uploadAvatar } from '../../services/auth.service';
-import { Toast } from 'toastify-react-native';
-import { useUserStore } from '../../store/user-store';
+import { useMutation } from "@tanstack/react-query";
+import { uploadAvatar } from "../../services/auths.service";
+import { Toast } from "toastify-react-native";
+import { useUserStore } from "../../store/user-store";
 
-export const useUploadAvatarMutation = () => {
+export const useUploadAvarMutation = () => {
   const { updateUser } = useUserStore();
 
   const mutation = useMutation({
     mutationFn: uploadAvatar,
-    onSuccess: (data) => updateUser({ avatarUrl: data.url }),
+    onSuccess: (response) => {
+      updateUser({ avatarUrl: response.url });
+    },
     onError: (error) => {
-      Toast.error('Erro ao enviar a imagem. Tente novamente.');
+      console.log(error);
+      Toast.error("Erro ao fazer upload da foto de perfil");
     },
   });
 

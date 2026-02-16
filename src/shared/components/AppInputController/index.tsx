@@ -1,34 +1,38 @@
-import { Control, Controller, FieldErrors, FieldValues, Path } from 'react-hook-form';
-import { AppInput, IAppInputProps } from '../AppInput';
+import {
+  Control,
+  Controller,
+  FieldErrors,
+  FieldValues,
+  Path,
+} from "react-hook-form";
+import { AppInput, AppInputProps } from "../AppInput";
 
-interface IAppInputControllerProps<T extends FieldValues> extends Omit<
-  IAppInputProps,
-  'value' | 'onChangeText' | 'error'
-> {
+interface AppInputControllerProps<T extends FieldValues>
+  extends Omit<AppInputProps, "value" | "onChangeText" | "error"> {
   control: Control<T>;
   name: Path<T>;
   errors?: FieldErrors<T>;
 }
 
 export const AppInputController = <T extends FieldValues>({
-  control,
   name,
+  control,
   errors,
   ...rest
-}: IAppInputControllerProps<T>) => {
+}: AppInputControllerProps<T>) => {
   return (
     <Controller
-      control={control}
       name={name}
+      control={control}
       render={({
-        field: { onChange, onBlur, value },
+        field: { onBlur, onChange, value },
         fieldState: { error },
         formState: { isSubmitting },
       }) => (
         <AppInput
           onChangeText={onChange}
-          onBlur={onBlur}
           value={value}
+          onBlur={onBlur}
           error={error?.message}
           isDisabled={isSubmitting || rest.isDisabled}
           {...rest}

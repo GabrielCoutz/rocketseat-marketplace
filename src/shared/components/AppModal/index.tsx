@@ -1,10 +1,11 @@
-import { Modal, TouchableWithoutFeedback, View } from 'react-native';
-import { useModalStore } from '../../store/modal-store';
+import { Modal, Text, TouchableWithoutFeedback, View } from "react-native";
+import { useModalStore } from "../../store/modal-store";
 
 export const AppModal = () => {
   const { isOpen, config, content, close } = useModalStore();
-
-  if (!isOpen || !content) return null;
+  if (!isOpen || !content) {
+    return null;
+  }
 
   return (
     <Modal
@@ -12,10 +13,11 @@ export const AppModal = () => {
       animationType={config.animationType}
       transparent={config.transparent}
       statusBarTranslucent={config.statusBarTranslucent}
-      onRequestClose={close}>
+      onRequestClose={close}
+    >
       <TouchableWithoutFeedback onPress={close}>
-        <View className="flex-1 items-center justify-center bg-black/50 px-6">
-          <TouchableWithoutFeedback onPress={() => {}}>{content}</TouchableWithoutFeedback>
+        <View className="flex-1 bg-black/50 justify-center items-center px-6">
+          {content}
         </View>
       </TouchableWithoutFeedback>
     </Modal>

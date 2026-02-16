@@ -1,12 +1,12 @@
-import { router } from 'expo-router';
-import { FC } from 'react';
-import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { AppButton } from '../../shared/components/AppButton';
-import { AppInputController } from '../../shared/components/AppInputController';
-import { AuthFormHeader } from '../../shared/components/AuthFormHeader';
-import { KeyboardContainer } from '../../shared/components/KeyboardContainer';
-import { useRegisterViewModel } from './useRegister.viewModel';
-import { Ionicons } from '@expo/vector-icons';
+import { FC, useState } from "react";
+import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { useRegisterViewModel } from "./useRegister.viewModel";
+import { AppInputController } from "../../shared/components/AppInputController";
+import { AuthFormHeader } from "../../shared/components/AuthFormHeader";
+import { router } from "expo-router";
+import { KeyboardContainer } from "../../shared/components/KeyboardContainer";
+import { AppButton } from "../../shared/components/AppButton";
+import { Ionicons } from "@expo/vector-icons";
 
 export const RegisterView: FC<ReturnType<typeof useRegisterViewModel>> = ({
   onSubmit,
@@ -17,22 +17,24 @@ export const RegisterView: FC<ReturnType<typeof useRegisterViewModel>> = ({
   return (
     <KeyboardContainer>
       <ScrollView className="flex-1 px-[40px]">
-        <AuthFormHeader title="Crie sua conta" subTitle="Informe seus dados pessoais e de acesso" />
-
+        <AuthFormHeader
+          title="Crie sua conta"
+          subTitle="Informe os seus dados pessoais e de acesso"
+        />
         <TouchableOpacity
-          className="mb-8 h-[120px] w-[120px] items-center justify-center self-center rounded-xl bg-shape"
-          onPress={handleSelectAvatar}>
+          className="w-[120px] h-[120px] rounded-[12px] items-center justify-center bg-shape self-center mb-8"
+          onPress={handleSelectAvatar}
+        >
           {avatarUri ? (
             <Image
+              className="w-full h-full rounded-[12px]"
               source={{ uri: avatarUri }}
-              className="h-full w-full rounded-xl"
               resizeMode="cover"
             />
           ) : (
             <Ionicons name="cloud-upload-outline" size={32} />
           )}
         </TouchableOpacity>
-
         <AppInputController
           leftIcon="person-outline"
           label="NOME"
@@ -49,14 +51,14 @@ export const RegisterView: FC<ReturnType<typeof useRegisterViewModel>> = ({
           placeholder="(00) 00000-0000"
         />
 
-        <Text className="mt-6 text-base font-bold text-gray-500">Acesso</Text>
+        <Text className="text-base mt-6 font-bold text-gray-500">Acesso</Text>
 
         <AppInputController
           leftIcon="mail-outline"
           label="E-MAIL"
           control={control}
           name="email"
-          placeholder="mail@example.com.br"
+          placeholder="mail@exemple.com.br"
         />
 
         <AppInputController
@@ -73,8 +75,8 @@ export const RegisterView: FC<ReturnType<typeof useRegisterViewModel>> = ({
           label="CONFIRMAR SENHA"
           control={control}
           name="confirmPassword"
-          placeholder="Confirme sua senha"
           secureTextEntry
+          placeholder="Confirme a senha"
         />
 
         <AppButton className="mt-6" onPress={onSubmit}>
@@ -82,8 +84,13 @@ export const RegisterView: FC<ReturnType<typeof useRegisterViewModel>> = ({
         </AppButton>
 
         <View className="mt-16">
-          <Text className="mb-6 text-base text-gray-300">Já tem uma conta?</Text>
-          <AppButton variant="outlined" onPress={() => router.push('/(public)/login')}>
+          <Text className="text-base text-gray-300 mb-6">
+            Já tem uma conta?
+          </Text>
+          <AppButton
+            variant="outlined"
+            onPress={() => router.push("/(public)/login")}
+          >
             Login
           </AppButton>
         </View>

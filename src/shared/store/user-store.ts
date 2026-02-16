@@ -1,10 +1,10 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { create } from 'zustand';
-import { createJSONStorage, persist } from 'zustand/middleware';
-import { IUser } from '../interfaces/user';
+import { UserInterface } from "../interfaces/user";
+import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface SetSessionParams {
-  user: IUser;
+  user: UserInterface;
   token: string;
   refreshToken: string;
 }
@@ -15,14 +15,14 @@ interface UpdateTokensParams {
 }
 
 export interface UserStore {
-  user: IUser | null;
+  user: UserInterface | null;
   token: string | null;
   refreshToken: string | null;
 
   setSession: (sessionData: SetSessionParams) => void;
   logout: () => void;
-  updateTokens: (updateTokensParams: UpdateTokensParams) => void;
-  updateUser: (updatedUserData: Partial<IUser>) => void;
+  updateTokens: (updateTokensData: UpdateTokensParams) => void;
+  updateUser: (updatedUserData: Partial<UserInterface>) => void;
 }
 
 export const useUserStore = create<UserStore>()(
@@ -32,21 +32,22 @@ export const useUserStore = create<UserStore>()(
       token: null,
       refreshToken: null,
 
-      logout: () => set({ user: null, token: null, refreshToken: null }),
-      setSession: (sessionData) => {
-        set({ ...sessionData });
-      },
-      updateTokens: (updateTokensParams) => {
-        set({ ...updateTokensParams });
-      },
-      updateUser: (updatedUserData) => {
+      logout: () =>
+        set({
+          user: null,
+          token: null,
+          refreshToken: null,
+        }),
+      setSession: (sessionData) => set({ ...sessionData }),
+      updateTokens: (updateTokensData) => set({ ...updateTokensData }),
+
+      updateUser: (updatedUserData) =>
         set((state) => ({
           user: state.user ? { ...state.user, ...updatedUserData } : null,
-        }));
-      },
+        })),
     }),
     {
-      name: 'marketplace-auth',
+      name: "marketplace-auth",
       storage: createJSONStorage(() => AsyncStorage),
     }
   )

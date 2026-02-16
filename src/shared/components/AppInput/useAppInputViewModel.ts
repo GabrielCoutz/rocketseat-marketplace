@@ -1,35 +1,36 @@
-import { useRef, useState } from 'react';
-import { BlurEvent, FocusEvent } from 'react-native';
-import { TextInput } from 'react-native-gesture-handler';
-import { colors } from '../../../styles/colors';
+import { useRef, useState } from "react";
+import { BlurEvent, FocusEvent, TextInput } from "react-native";
+import { colors } from "../../../styles/colors";
 
-interface IUseAppInputViewModelProps {
-  value?: string;
+interface AppInputViewModelProps {
   isError?: boolean;
   isDisabled?: boolean;
   secureTextEntry?: boolean;
   onFocus?: (event: FocusEvent) => void;
   onBlur?: (event: BlurEvent) => void;
-  mask?: (value: string) => string | void;
+  mask?: (text: string) => string | void;
   onChangeText?: (text: string) => string | void;
+  value?: string;
 }
 
 export const useAppInputViewModel = ({
-  value,
-  isError,
   isDisabled,
-  secureTextEntry,
-  onFocus,
-  onBlur,
+  isError,
   mask,
+  onBlur,
   onChangeText,
-}: IUseAppInputViewModelProps) => {
-  const [showPassword, setShowPassword] = useState(secureTextEntry);
+  onFocus,
+  secureTextEntry,
+  value,
+}: AppInputViewModelProps) => {
+  const [showPassword, setShowPassord] = useState(secureTextEntry);
   const [isFocused, setIsFocused] = useState(false);
 
   const inputRef = useRef<TextInput>(null);
 
-  const handleChangePasswordVisibility = () => setShowPassword((prevState) => !prevState);
+  const handlePasswordToggle = () => {
+    setShowPassord((prevValue) => !prevValue);
+  };
 
   const handleWrapperPress = () => {
     inputRef.current?.focus();
@@ -45,29 +46,29 @@ export const useAppInputViewModel = ({
     onBlur?.(event);
   };
 
-  const getIconColor = (): string =>
-    isError
-      ? colors.danger
-      : isFocused
-        ? colors['purple-base']
-        : !!value
-          ? colors['purple-base']
-          : colors.gray[200];
+  const getIconColor = () => {
+    if (isError) return colors.danger;
+    if (isFocused) return colors["purple-base"];
+    if (value) return colors["purple-base"];
+    return colors.gray[200];
+  };
 
   const handleTextChange = (text: string) => {
-    if (!!mask) onChangeText?.(mask(text) || '');
-    else onChangeText?.(text);
+    if (mask) {
+      onChangeText?.(mask(text) || "");
+    } else {
+      onChangeText?.(text);
+    }
   };
 
   return {
-    inputRef,
-    isFocused,
-    showPassword,
-    handleChangePasswordVisibility,
-    handleWrapperPress,
-    handleFocus,
-    handleBlur,
     getIconColor,
+    handleBlur,
+    handleFocus,
+    handleWrapperPress,
+    handlePasswordToggle,
+    showPassword,
     handleTextChange,
+    isFocused,
   };
 };

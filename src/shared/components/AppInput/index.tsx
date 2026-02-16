@@ -1,53 +1,61 @@
-import { Pressable, Text, TextInput, TextInputProps, TouchableOpacity, View } from 'react-native';
-import { appInputVariants, IAppInputVariants } from './input.variants';
-import { Ionicons } from '@expo/vector-icons';
-import { useAppInputViewModel } from './useAppInputViewModel';
+import {
+  Pressable,
+  Text,
+  TextInput,
+  TextInputProps,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { appInputVariants, AppInputVariantsProps } from "./input.variants";
+import { Ionicons } from "@expo/vector-icons";
+import { FC } from "react";
+import { useAppInputViewModel } from "./useAppInputViewModel";
 
-export interface IAppInputProps extends TextInputProps, IAppInputVariants {
+export interface AppInputProps extends TextInputProps, AppInputVariantsProps {
   label?: string;
-  error?: string;
   leftIcon?: keyof typeof Ionicons.glyphMap;
   rightIcon?: keyof typeof Ionicons.glyphMap;
   containerClassName?: string;
-  mask?: (value: string) => string | undefined;
+  mask?: (value: string) => void | string;
+  error?: string;
 }
 
-export const AppInput = ({
+export const AppInput: FC<AppInputProps> = ({
   label,
-  error,
   leftIcon,
   rightIcon,
   containerClassName,
   value,
   isError,
-  isDisabled,
-  secureTextEntry,
+  secureTextEntry = false,
   onBlur,
   onFocus,
   onChangeText,
   mask,
-  ...rest
-}: IAppInputProps) => {
+  error,
+  isDisabled,
+  ...textInputProps
+}) => {
   const {
-    inputRef,
-    showPassword,
-    isFocused,
-    handleChangePasswordVisibility,
-    handleWrapperPress,
-    handleFocus,
-    handleBlur,
     getIconColor,
+    handleBlur,
+    handleFocus,
+    handlePasswordToggle,
+    handleWrapperPress,
+    showPassword,
     handleTextChange,
+    isFocused,
   } = useAppInputViewModel({
-    value,
-    isError,
-    isDisabled,
-    secureTextEntry,
     onBlur,
     onFocus,
-    onChangeText,
+    isError: !!error,
     mask,
+    onChangeText,
+    isDisabled,
+    secureTextEntry,
+    value,
   });
+
   const styles = appInputVariants({
     isFocused,
     isDisabled,
@@ -55,48 +63,40 @@ export const AppInput = ({
   });
 
   return (
-    <View
-      className={styles.container({
-        className: containerClassName,
-      })}>
+    <View className={styles.container({ className: containerClassName })}>
       <Text className={styles.label()}>{label}</Text>
-
       <Pressable className={styles.wrapper()}>
-        {leftIcon && <Ionicons className="mr-3" name={leftIcon} size={22} color={getIconColor()} />}
-
-        <TextInput
-          className={styles.input()}
-          onBlur={handleBlur}
-          onFocus={handleFocus}
-          ref={inputRef}
-          editable={!isDisabled}
-          secureTextEntry={showPassword}
-          value={value}
-          onChangeText={handleTextChange}
-          {...rest}
-        />
-
-        {rightIcon && (
-          <Ionicons className="ml-3" name={rightIcon} size={22} color={getIconColor()} />
+        {leftIcon && (
+          <Ionicons
+            color={getIconColor()}
+            className="mr-3"
+            size={22}
+            name={leftIcon}
+          />
         )}
 
+        <TextInput
+          onBlur={handleBlur}
+          onFocus={handleFocus}
+          className={styles.input()}
+          onChangeText={handleTextChange}
+          value={value}
+          secureTextEntry={showPassword}
+          {...textInputProps}
+        />
+
         {secureTextEntry && (
-          <TouchableOpacity
-            className="ml-3"
-            onPress={handleChangePasswordVisibility}
-            activeOpacity={0.7}>
+          <TouchableOpacity activeOpacity={0.7} onPress={handlePasswordToggle}>
             <Ionicons
-              name={showPassword ? 'eye-outline' : 'eye-off-outline'}
               size={22}
-              color={getIconColor()}
+              name={showPassword ? "eye-outline" : "eye-off-outline"}
             />
           </TouchableOpacity>
         )}
       </Pressable>
-
       {error && (
         <Text className={styles.error()}>
-          <Ionicons name="alert-circle-outline" size={14} color="#FF375F" /> {error}
+          <Ionicons className="ml-2" name="alert-circle-outline" /> {error}
         </Text>
       )}
     </View>

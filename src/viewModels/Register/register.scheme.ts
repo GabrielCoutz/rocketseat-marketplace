@@ -1,19 +1,23 @@
-import * as Yup from 'yup';
+import * as yup from "yup";
 
-export const registerScheme = Yup.object().shape({
-  name: Yup.string()
-    .required('Nome é obrigatório')
-    .min(4, 'O nome deve ter pelo menos 4 caracteres'),
-  email: Yup.string().email('Email inválido').required('Email é obrigatório'),
-  password: Yup.string()
-    .min(6, 'A senha deve ter pelo menos 6 caracteres')
-    .required('Senha é obrigatória'),
-  confirmPassword: Yup.string()
-    .oneOf([Yup.ref('password')], 'As senhas devem corresponder')
-    .required('Confirmação de senha é obrigatória'),
-  phone: Yup.string()
-    .required('Telefone é obrigatório')
-    .matches(/^\d{11}$/, 'Número de telefone inválido'),
+export const registerScheme = yup.object({
+  name: yup
+    .string()
+    .required("Nome é obrigatório")
+    .min(4, "Nome deve ter pelo menos 4 caracteres"),
+  email: yup.string().email("E-mail inválido").required("E-mail é obrigatório"),
+  password: yup
+    .string()
+    .required("Senha é obrigatória")
+    .min(6, "Senha deve ter pelo meno 6 caracteres"),
+  confirmPassword: yup
+    .string()
+    .required("Senha é obrigatória")
+    .oneOf([yup.ref("password")], "Senhas não coincidem"),
+  phone: yup
+    .string()
+    .required("Telefone é obrigatório")
+    .matches(/^\d{11}$/, "Telefone deve ter 11 dígitos (DDD + número)"),
 });
 
-export type IRegisterFormData = Yup.InferType<typeof registerScheme>;
+export type RegisterFormData = yup.InferType<typeof registerScheme>;

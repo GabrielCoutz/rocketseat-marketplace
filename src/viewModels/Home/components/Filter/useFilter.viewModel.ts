@@ -1,20 +1,43 @@
-import { useGetProductCategoriesQuery } from '../../../../shared/queries/product/use-get-product-categories';
-import { useBottomSheetStore } from '../../../../shared/store/bottomsheet-store';
-import { useFilterStore } from '../../../../shared/store/use-filter-store';
+import { useState } from "react";
+import { useDebounce } from "../../../../shared/hooks/useDebounde";
+import { useGetProductCategoriesQuery } from "../../../../shared/queries/product/use-get-product-categories";
+import { useBottomSheetStore } from "../../../../shared/store/bottomsheet-store";
+import { useFilterStore } from "../../../../shared/store/use-filter-store";
 
 export const useFilterViewModel = () => {
-  const { data: productCategories, isLoading } = useGetProductCategoriesQuery();
+  const { data: productsCategory, isLoading } = useGetProductCategoriesQuery();
+
+  const {
+    updateFilter,
+    filterState,
+    applyFilters,
+    appliedFilterState,
+    resetFilter,
+  } = useFilterStore();
   const { close } = useBottomSheetStore();
-
-  const { updateFilter, filterState, applyFilters, appliedFilterState, resetFilter } =
-    useFilterStore();
-
   const handleValueMaxChange = (value: number) => {
-    updateFilter({ key: 'valueMax', value: value });
+    updateFilter({ key: "valueMax", value });
+  };
+  console.log(appliedFilterState);
+  const handleValueMinChange = (value: number) => {
+    updateFilter({ key: "valueMin", value });
   };
 
-  const handleValueMinChange = (value: number) => {
-    updateFilter({ key: 'valueMin', value: value });
+  const handleCategoryToglle = (categoryId: number) => {
+    const categoryAlredyInArray =
+      filterState.selectedCategories.includes(categoryId);
+
+    if (categoryAlredyInArray) {
+      updateFilter({
+        key: "selectedCategories",
+        value: filterState.selectedCategories.filter((id) => id !== categoryId),
+      });
+    } else {
+      updateFilter({
+        key: "selectedCategories",
+        value: [...filterState.selectedCategories, categoryId],
+      });
+    }
   };
 
   const handleApplyFilters = () => {
@@ -26,28 +49,12 @@ export const useFilterViewModel = () => {
     close();
     resetFilter();
   };
-
-  const handleCategoryToggle = (categoryId: number) => {
-    const categoryAlreadyInArray = filterState.selectedCategories.includes(categoryId);
-
-    if (categoryAlreadyInArray) {
-      updateFilter({
-        key: 'selectedCategories',
-        value: filterState.selectedCategories.filter((id) => id !== categoryId),
-      });
-    } else {
-      updateFilter({
-        key: 'selectedCategories',
-        value: [...filterState.selectedCategories, categoryId],
-      });
-    }
-  };
   return {
-    productCategories,
+    productsCategory,
     isLoading,
+    handleCategoryToglle,
     handleValueMaxChange,
     handleValueMinChange,
-    handleCategoryToggle,
     selectedCategories: filterState.selectedCategories,
     handleApplyFilters,
     handleResetFilter,

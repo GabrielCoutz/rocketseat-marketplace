@@ -1,4 +1,4 @@
-import { useCartStore } from '../../../../shared/store/cart-store';
+import { useCartStore } from "../../../../shared/store/cart-store";
 
 export const useProductCartCardViewModel = () => {
   const { updateQuantity } = useCartStore();
@@ -12,7 +12,7 @@ export const useProductCartCardViewModel = () => {
   };
 
   return {
-    handleIncrement,
     handleDecrement,
+    handleIncrement,
   };
 };

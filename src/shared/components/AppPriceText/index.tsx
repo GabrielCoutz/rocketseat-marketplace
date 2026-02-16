@@ -1,6 +1,6 @@
-import { FC } from 'react';
-import { AppPriceTextView } from './AppPriceText.view';
-import { useAppPriceTextViewModel } from './useAppPriceText.viewModel';
+import { FC } from "react";
+import { AppPriceTextView } from "./AppPriceTextView";
+import { useAppPriceTextViewModel } from "./useAppPricetextViewModel";
 
 interface AppPriceTextParams {
   classNameCurrency?: string;
@@ -9,9 +9,9 @@ interface AppPriceTextParams {
 }
 
 export const AppPriceText: FC<AppPriceTextParams> = ({
+  value,
   classNameCurrency,
   classNameValue,
-  value,
 }) => {
   const viewModel = useAppPriceTextViewModel(value);
 

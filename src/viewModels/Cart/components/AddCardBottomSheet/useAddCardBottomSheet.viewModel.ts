@@ -1,30 +1,33 @@
-import { yupResolver } from '@hookform/resolvers/yup';
-import { useRef, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { useCreateCreditCardMutation } from '../../../../shared/queries/credit-cards/use-create-credit-card.mutatio';
-import { useBottomSheetStore } from '../../../../shared/store/bottomsheet-store';
-import { CreditCardFormData, creditCardSchema } from './credit-card.schema';
+import { useForm } from "react-hook-form";
+import { useCreateCreditCardMutation } from "../../../../shared/queries/credit-cards/use-create-credit-card.mutation";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { CreditCardFormData, creditCardSchema } from "./credit-card.schema";
+import { useBottomSheetStore } from "../../../../shared/store/bottomsheet-store";
+import { useRef, useState } from "react";
 
-export type FocusedField = 'number' | 'name' | 'expiry' | 'cvv';
+export type FocusedField = "number" | "name" | "expiry" | "cvv";
 
-const formatExpirationDateFormApi = (dateString: string, setError: (message: string) => void) => {
-  const [month, year] = dateString.split('/').map(Number);
+const formatExpirationDateFormApi = (
+  dateString: string,
+  setError: (message: string) => void
+): string => {
+  const [month, year] = dateString.split("/").map(Number);
 
   if (month < 1 || month > 12) {
-    setError('Mês inválido');
-    throw new Error('Mês inválido');
+    setError("Mês inválido");
+    throw new Error("Mês inválido");
   }
 
   if (year < 0 || year > 99) {
-    setError('Ano inválido');
-    throw new Error('Ano inválido');
+    setError("Ano inválido");
+    throw new Error("Ano inválido");
   }
 
   const fullYear = 2000 + year;
 
   const expirationDate = new Date(fullYear, month, 0);
 
-  const isoDate = expirationDate.toISOString().split('T')[0];
+  const isoDate = expirationDate.toISOString().split("T")[0];
 
   return isoDate;
 };
@@ -39,23 +42,29 @@ export const useAddCardBottomSheetViewModel = () => {
     useForm<CreditCardFormData>({
       resolver: yupResolver(creditCardSchema),
       defaultValues: {
-        titularName: '',
-        number: '',
-        CVV: '',
-        expirationDate: '',
+        titularName: "",
+        CVV: "",
+        number: "",
+        expirationDate: "",
       },
     });
 
   const { close: closeBottomSheet } = useBottomSheetStore();
 
   const handleCreateCreditCard = handleSubmit(
-    async ({ number, CVV, expirationDate: rawExpirationDate }) => {
-      const expirationDate = formatExpirationDateFormApi(rawExpirationDate, (message) =>
-        setError('expirationDate', { message })
+    async ({ CVV, expirationDate: rawExpirationDate, number }) => {
+      const expirationDate = formatExpirationDateFormApi(
+        rawExpirationDate,
+        (message) => setError("expirationDate", { message })
       );
-      const cleanedNumber = number.replace(/\D/g, '');
+      const cleanedNumber = number.replace(/\s/g, "");
+      console.log({
+        expirationDate,
+        CVV,
+        cleanedNumber,
+      });
 
-      await createCreditCardMutation.mutate({
+      await createCreditCardMutation.mutateAsync({
         CVV: Number(CVV),
         expirationDate,
         number: cleanedNumber,
@@ -66,12 +75,14 @@ export const useAddCardBottomSheetViewModel = () => {
   );
 
   const expirationDateMask = (value: string) => {
-    const cleaned = value.replace(/\D/g, '');
+    const cleaned = value.replace(/\D/g, "");
 
-    if (cleaned.length <= 2) return cleaned;
+    if (cleaned.length < 2) {
+      return cleaned;
+    }
 
     const month = cleaned.slice(0, 2);
-    const year = cleaned.slice(2);
+    const year = cleaned.slice(2, 4);
 
     if (year.length > 0) {
       return `${month}/${year}`;
@@ -81,12 +92,11 @@ export const useAddCardBottomSheetViewModel = () => {
   };
 
   const cardNumberMask = (value: string) => {
-    const cleaned = value.replace(/\D/g, '');
-    return cleaned.replace(/(\d{4})(?=\d)/g, '$1 ').trim();
+    const cleaned = value.replace(/\D/g, "");
+    return cleaned.replace(/(\d{4})(?=\d)/g, "$1 ").trim();
   };
 
   const handleFieldFocus = (field: FocusedField) => {
-    console.log(field);
     if (blurTimeoutRef.current) {
       clearTimeout(blurTimeoutRef.current);
     }
@@ -100,9 +110,9 @@ export const useAddCardBottomSheetViewModel = () => {
     }, 50);
   };
 
-  const isFlipped = focusedField === 'cvv';
+  const isFlipped = focusedField === "cvv";
 
-  const watchedValues = watch();
+  const watchedValue = watch();
 
   return {
     handleCreateCreditCard,
@@ -113,12 +123,11 @@ export const useAddCardBottomSheetViewModel = () => {
     handleFieldFocus,
     handleFieldBlur,
     focusedField,
-    cardData: {
-      number: watchedValues.number,
-      name: watchedValues.titularName,
-      expiry: watchedValues.expirationDate,
-      cvv: watchedValues.CVV,
+    carData: {
+      number: watchedValue.number,
+      name: watchedValue.titularName,
+      expiry: watchedValue.expirationDate,
+      cvv: watchedValue.CVV,
     },
-    closeBottomSheet,
   };
 };

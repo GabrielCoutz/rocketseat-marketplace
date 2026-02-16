@@ -1,14 +1,14 @@
-import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
-import { Text, View } from 'react-native';
-import { AppButton } from '../../../../shared/components/AppButton';
-import { colors } from '../../../../styles/colors';
+import { Ionicons } from "@expo/vector-icons";
+import { Text, View } from "react-native";
+import { colors } from "../../../../styles/colors";
+import { AppButton } from "../../../../shared/components/AppButton";
+import { router } from "expo-router";
 
-export const ProductError = () => {
+export const Error = () => {
   return (
-    <View className="flex-1 items-center justify-center bg-background px-6">
+    <View className="flex-1 bg-background items-center justify-center px-6">
       <Ionicons name="alert-circle" color={colors.danger} size={40} />
-      <Text className="mt-5 text-center text-xl text-danger">
+      <Text className="text-xl text-center text-danger mt-5">
         Ocorreu um erro ao buscar os detalhes do produto!
       </Text>
       <AppButton onPress={router.back} className="mt-4">

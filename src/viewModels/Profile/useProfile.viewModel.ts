@@ -1,25 +1,27 @@
-import { yupResolver } from '@hookform/resolvers/yup';
-import { CameraType } from 'expo-image-picker';
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { useAppModal } from '../../shared/hooks/useAppModal';
-import { useImage } from '../../shared/hooks/useImage';
-import { useUploadAvatarMutation } from '../../shared/queries/auth/use-upload-avatar.mutation';
-import { useUpdateProfileMutation } from '../../shared/queries/profile/use-update-profile.mutation';
-import { useCartStore } from '../../shared/store/cart-store';
-import { useModalStore } from '../../shared/store/modal-store';
-import { useUserStore } from '../../shared/store/user-store';
-import { ProfileFormData, profileScheme } from './profile.scheme';
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useForm } from "react-hook-form";
+import { ProfileFormData, profileScheme } from "./profile.scheme";
+import { useState } from "react";
+import { useUserStore } from "../../shared/store/user-store";
+import { useUpdateProfileMutation } from "../../shared/queries/profile/use-update-profile.mutation";
+import { useAppModal } from "../../shared/hooks/useAppModal";
+import { useModalStore } from "../../shared/store/modal-store";
+import { useCartStore } from "../../shared/store/cart-store";
+import { useImage } from "../../shared/hooks/useImage";
+import { CameraType } from "expo-image-picker";
+import { useUploadAvarMutation } from "../../shared/queries/auth/use-upload-avatar.mutation";
 
 export const useProfileViewModel = () => {
   const { user, logout } = useUserStore();
 
-  const uploadAvatarMutation = useUploadAvatarMutation();
-
+  const updateProfileMutation = useUpdateProfileMutation();
   const { showSelection } = useAppModal();
   const { close } = useModalStore();
   const { clearCart } = useCartStore();
-  const { isLoading, handleSelectImage } = useImage({
+
+  const uploadAvatarMutation = useUploadAvarMutation();
+
+  const { handleSelectImage } = useImage({
     callback: async (url) => {
       if (url) {
         await uploadAvatarMutation.mutateAsync(url);
@@ -28,7 +30,6 @@ export const useProfileViewModel = () => {
     cameraType: CameraType.front,
   });
 
-  const updateProfileMutation = useUpdateProfileMutation();
   const {
     control,
     handleSubmit,
@@ -36,16 +37,21 @@ export const useProfileViewModel = () => {
   } = useForm<ProfileFormData>({
     resolver: yupResolver(profileScheme),
     defaultValues: {
-      name: user?.name ?? '',
-      email: user?.email ?? '',
-      phone: user?.phone ?? '',
+      phone: user?.phone ?? "",
+      email: user?.email ?? "",
+      name: user?.name ?? "",
+      newPassword: undefined,
       password: undefined,
     },
   });
 
   const validatePasswords = (userData: ProfileFormData) => {
     if (!userData.password) return true;
-    if (userData?.password?.length > 0) {
+
+    if (
+      userData.password === userData.newPassword &&
+      userData?.password?.length > 0
+    ) {
       return false;
     }
 
@@ -54,39 +60,37 @@ export const useProfileViewModel = () => {
 
   const onSubmit = handleSubmit(async (userData) => {
     if (!validatePasswords(userData)) return;
-
     await updateProfileMutation.mutateAsync(userData);
   });
 
   const handleLogout = () =>
     showSelection({
-      title: 'Sair',
-      message: 'Tem certeza que deseja sair da sua conta?',
+      title: "Sair",
+      message: "Tem certeza que deseja sair da sua conta?",
       options: [
         {
-          text: 'Continuar logado',
-          variant: 'primary',
-          onPress: close,
+          text: "Continuar logado",
+          onPres: close,
+          variant: "primary",
         },
         {
-          text: 'Sair',
-          variant: 'danger',
-          onPress: () => {
+          variant: "danger",
+          onPres: () => {
             clearCart();
             logout();
             close();
           },
+          text: "Sair",
         },
       ],
     });
 
   return {
-    control,
     onSubmit,
-    avatarUri: user?.avatarUrl ?? null,
+    control,
+    avatarUri: user?.avatarUrl,
     isSubmitting,
     handleLogout,
     handleSelectImage,
-    isLoading,
   };
 };

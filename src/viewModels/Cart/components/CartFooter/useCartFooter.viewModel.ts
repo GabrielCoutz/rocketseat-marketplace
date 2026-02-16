@@ -1,14 +1,17 @@
-import { useState } from 'react';
-import { CreditCard } from '../../../../shared/interfaces/credit-card';
-import { useCartStore } from '../../../../shared/store/cart-store';
-import { useSubmitOrderMutation } from '../../../../shared/queries/orders/use-submit-order.mutation';
-import { router } from 'expo-router';
-import { useAppModal } from '../../../../shared/hooks/useAppModal';
-export const useCartFooterViewModel = () => {
-  const [selectedCreditCard, setSelectedCreditCard] = useState<null | CreditCard>(null);
+import { useState } from "react";
+import { useCartStore } from "../../../../shared/store/cart-store";
+import { CreditCard } from "../../../../shared/interfaces/credit-card";
+import { useSubmitOrderMutation } from "../../../../shared/queries/orders/use-submit-order.mutation";
+import { Toast } from "toastify-react-native";
+import { router } from "expo-router";
+import { useAppModal } from "../../../../shared/hooks/useAppModal";
 
-  const { products, total, clearCart } = useCartStore();
+export const useCartFooterViewModel = () => {
+  const [selectedCreditCard, setSelectedCreditCard] =
+    useState<null | CreditCard>(null);
+  const { total, products, clearCart } = useCartStore();
   const { showSuccess } = useAppModal();
+
   const createOrderMutation = useSubmitOrderMutation();
 
   const submitOrderMutation = async () => {
@@ -18,15 +21,14 @@ export const useCartFooterViewModel = () => {
       creditCardId: selectedCreditCard.id,
       items: products.map(({ id, quantity }) => ({ productId: id, quantity })),
     });
-
     clearCart();
-    router.push('/orders');
+
     showSuccess({
-      title: 'Sucesso!',
-      message: 'Pedido feito com sucesso!',
-      buttonText: 'Ver pedidos',
+      title: "Sucesso!",
+      message: "Pedido feito com sucesso!",
+      buttonText: "Ver pedidos",
       onButtonPress: () => {
-        router.push('/orders');
+        router.push("/orders");
       },
     });
   };
@@ -36,6 +38,6 @@ export const useCartFooterViewModel = () => {
     selectedCreditCard,
     setSelectedCreditCard,
     submitOrderMutation,
-    isLoadingOrder: createOrderMutation.isPending,
+    isOrderLoading: createOrderMutation.isPending,
   };
 };

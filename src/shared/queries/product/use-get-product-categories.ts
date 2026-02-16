@@ -1,11 +1,11 @@
-import { useQuery } from '@tanstack/react-query';
-import { getProductsCategories } from '../../services/product.service';
+import { useQuery } from "@tanstack/react-query";
+import { getProductsCategories } from "../../services/product.service";
 
 export const useGetProductCategoriesQuery = () => {
   const query = useQuery({
-    queryKey: ['product-categories'],
+    queryKey: ["products-categories"],
     queryFn: getProductsCategories,
-    staleTime: 1000 * 60 * 60, // 1 hour
+    staleTime: 1000 * 60 * 60,
   });
 
   return query;

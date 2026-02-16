@@ -1,10 +1,8 @@
-export interface IUser {
+export interface UserInterface {
   id: number;
   name: string;
   email: string;
-  avatarUrl?: string | undefined;
+  avatarUrl: string;
   phone: string;
   createdAt: string;
-  updatedAt: string;
-  deletedAt: string;
 }

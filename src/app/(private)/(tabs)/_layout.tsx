@@ -1,8 +1,8 @@
-import { Tabs } from 'expo-router';
-import { colors } from '../../../styles/colors';
-import { Ionicons } from '@expo/vector-icons';
+import { Tabs } from "expo-router";
+import { colors } from "../../../styles/colors";
+import { Ionicons } from "@expo/vector-icons";
 
-export default function PrivateTabsLayout() {
+export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
@@ -11,16 +11,19 @@ export default function PrivateTabsLayout() {
           height: 110,
           paddingTop: 16,
         },
-      }}>
+      }}
+    >
       <Tabs.Screen
         name="home"
         options={{
-          title: 'Produtos',
-          tabBarActiveTintColor: colors['purple-base'],
-          tabBarIcon: ({ color }) => <Ionicons name="storefront-outline" size={25} color={color} />,
+          title: "PRODUTOS",
+          tabBarActiveTintColor: colors["purple-base"],
+          tabBarIcon: ({ color }) => (
+            <Ionicons color={color} name="storefront-outline" size={25} />
+          ),
           tabBarLabelStyle: {
             fontSize: 14,
-            marginBottom: 4,
+            marginTop: 4,
           },
         }}
       />
@@ -28,12 +31,14 @@ export default function PrivateTabsLayout() {
       <Tabs.Screen
         name="orders"
         options={{
-          title: 'Pedidos',
-          tabBarActiveTintColor: colors['purple-base'],
-          tabBarIcon: ({ color }) => <Ionicons name="clipboard-outline" size={25} color={color} />,
+          title: "PEDIDOS",
+          tabBarActiveTintColor: colors["purple-base"],
+          tabBarIcon: ({ color }) => (
+            <Ionicons color={color} name="clipboard-outline" size={25} />
+          ),
           tabBarLabelStyle: {
             fontSize: 14,
-            marginBottom: 4,
+            marginTop: 4,
           },
         }}
       />
@@ -41,12 +46,14 @@ export default function PrivateTabsLayout() {
       <Tabs.Screen
         name="cart"
         options={{
-          title: 'Carrinho',
-          tabBarActiveTintColor: colors['purple-base'],
-          tabBarIcon: ({ color }) => <Ionicons name="cart-outline" size={25} color={color} />,
+          title: "CARRINHO",
+          tabBarActiveTintColor: colors["purple-base"],
+          tabBarIcon: ({ color }) => (
+            <Ionicons color={color} name="cart-outline" size={25} />
+          ),
           tabBarLabelStyle: {
             fontSize: 14,
-            marginBottom: 4,
+            marginTop: 4,
           },
         }}
       />

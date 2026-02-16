@@ -1,50 +1,54 @@
-import { FlatList, RefreshControl } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-
-import { ProductCardView } from './components/ProductCard';
-import { useHomeViewModel } from './useHome.viewModel';
-import { FC } from 'react';
-import { Footer } from './components/Footer';
-import { colors } from '../../styles/colors';
-import { RenderHeader } from './components/RenderHeader';
+import { FlatList, RefreshControl, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { ProductCard } from "./components/ProductCard";
+import { FC } from "react";
+import { useHomeViewModel } from "./useHome.viewModel";
+import { Footer } from "./components/Footer";
+import { colors } from "../../styles/colors";
+import { RenderHeader } from "./components/RenderHeader";
 
 export const HomeView: FC<ReturnType<typeof useHomeViewModel>> = ({
   products,
+  handleEnReached,
+  hasNextPage,
+  isLoading,
+  isFetchingNextPage,
   handleRefresh,
   isRefetching,
-  handleEndReached,
-  isLoading,
-  hasNextPage,
-  isFetchingNextPage,
   setSearchInputText,
   searchInputText,
 }) => {
   return (
-    <SafeAreaView edges={['top']} className="flex-1">
+    <SafeAreaView edges={["top"]} className="flex-1">
       <FlatList
         data={products}
-        renderItem={({ item }) => <ProductCardView product={item} formatRating="" />}
+        renderItem={({ item }) => <ProductCard product={item} />}
         keyExtractor={({ id }) => `product-list-item-${id}`}
         numColumns={2}
-        onEndReached={handleEndReached}
+        ListFooterComponent={
+          <Footer
+            isLoading={hasNextPage && Boolean(isLoading || isFetchingNextPage)}
+          />
+        }
+        onEndReached={handleEnReached}
+        columnWrapperStyle={{
+          justifyContent: "space-between",
+        }}
+        ListHeaderComponent={
+          <RenderHeader
+            searchInputText={searchInputText}
+            setSearchInputText={setSearchInputText}
+          />
+        }
+        contentContainerClassName="px-[16px] pb-[120px]"
         refreshControl={
           <RefreshControl
             refreshing={isRefetching}
-            colors={[colors['purple-base']]}
-            tintColor={colors['purple-base']}
+            colors={[colors["purple-base"]]}
+            tintColor={colors["purple-base"]}
             onRefresh={handleRefresh}
           />
         }
-        columnWrapperStyle={{
-          justifyContent: 'space-between',
-        }}
-        ListHeaderComponent={
-          <RenderHeader searchInputText={searchInputText} setSearchInputText={setSearchInputText} />
-        }
-        ListFooterComponent={() => (
-          <Footer isLoading={hasNextPage && (isLoading || isFetchingNextPage)} />
-        )}
-        contentContainerClassName="px-4 pb-[120px]"
       />
     </SafeAreaView>
   );

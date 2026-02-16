@@ -1,14 +1,10 @@
-import { format } from 'date-fns';
-import { CreditCard } from '../../../../shared/interfaces/credit-card';
+import { CreditCard } from "../../../../shared/interfaces/credit-card";
+import { format } from "date-fns";
 
 export const useCreditCardItemViewModel = (creditCard: CreditCard) => {
-  const formattedExpirationDate = format(creditCard.expirationDate, 'MM/yyyy');
+  const formatedExpirationDate = format(creditCard.expirationDate, "dd/yyyy");
 
-  const formattedCardNumber = creditCard.number.slice(-4);
+  const formatedCardNumber = creditCard.number.slice(-4);
 
-  return {
-    creditCard,
-    formattedExpirationDate,
-    formattedCardNumber,
-  };
+  return { creditCard, formatedExpirationDate, formatedCardNumber };
 };

@@ -1,7 +1,7 @@
-import { FC } from 'react';
-import { FocusedField } from '../../useAddCardBottomSheet.viewModel';
-import { CreditCardView } from './CreditCard.view';
-import { useCreditCardViewModel } from './useCreditCard.viewModel';
+import { FC } from "react";
+import { FocusedField } from "../../useAddCardBottomSheet.viewModel";
+import { CreditCardView } from "./CreditCard.view";
+import { useCreditCardViewModel } from "./useCreditCard.viewModel";
 
 export interface CardData {
   number: string;
@@ -16,8 +16,18 @@ interface CreditCardParams {
   cardData: CardData;
 }
 
-export const CreditCard: FC<CreditCardParams> = ({ isFlipped, focusedField, cardData }) => {
+export const CreditCard: FC<CreditCardParams> = ({
+  focusedField,
+  isFlipped,
+  cardData,
+}) => {
   const viewModel = useCreditCardViewModel(isFlipped);
 
-  return <CreditCardView focusedField={focusedField} cardData={cardData} {...viewModel} />;
+  return (
+    <CreditCardView
+      cardData={cardData}
+      focusedField={focusedField}
+      {...viewModel}
+    />
+  );
 };

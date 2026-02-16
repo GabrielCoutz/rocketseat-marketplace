@@ -1,6 +1,6 @@
-import { memo } from 'react';
-import { HomeHeader } from '../Header';
-import { SearchInput } from '../SearchInput';
+import { memo } from "react";
+import { HomeHeader } from "../Header";
+import { SearchInput } from "../SearchInput";
 
 export const RenderHeader = memo(
   ({
@@ -12,7 +12,10 @@ export const RenderHeader = memo(
   }) => (
     <>
       <HomeHeader />
-      <SearchInput setSearchInputText={setSearchInputText} inputValue={searchInputText} />
+      <SearchInput
+        inputValue={searchInputText}
+        setSearchInputText={setSearchInputText}
+      />
     </>
   )
 );

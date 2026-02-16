@@ -1,7 +1,7 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { create } from 'zustand';
-import { createJSONStorage, persist } from 'zustand/middleware';
-import { cartService } from '../services/cart.service';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
+import { cartService } from "../services/cart.service";
 
 export interface CartProduct {
   id: number;
@@ -11,17 +11,18 @@ export interface CartProduct {
   image?: string;
 }
 
-export type OmitedProductCard = Omit<CartProduct, 'quantity'>;
+export type OmitedProductCart = Omit<CartProduct, "quantity">;
 
 interface CartStore {
   products: CartProduct[];
   total: number;
-  addProduct: (product: OmitedProductCard) => void;
+  addProduct: (product: OmitedProductCart) => void;
   removeProduct: (productId: number) => void;
   updateQuantity: (params: { productId: number; quantity: number }) => void;
   clearCart: () => void;
   getItemCount: () => number;
 }
+
 export const useCartStore = create<CartStore>()(
   persist(
     (set, get) => ({
@@ -29,12 +30,15 @@ export const useCartStore = create<CartStore>()(
       total: 0,
 
       addProduct: (newProduct) =>
-        set((state) => cartService.addProductToCart(state.products, newProduct)),
-
+        set((state) =>
+          cartService.addProdcutToCart(state.products, newProduct)
+        ),
       clearCart: () => set({ products: [], total: 0 }),
       getItemCount: () => cartService.getItemCount(get().products),
       removeProduct: (productId) =>
-        set((state) => cartService.removeProductFromList(state.products, productId)),
+        set((state) =>
+          cartService.removeProductFromList(state.products, productId)
+        ),
       updateQuantity: ({ productId, quantity }) =>
         set((state) =>
           cartService.updateProductQuantity({
@@ -45,7 +49,7 @@ export const useCartStore = create<CartStore>()(
         ),
     }),
     {
-      name: 'marketplace-cart',
+      name: "marketplace-cart",
       storage: createJSONStorage(() => AsyncStorage),
     }
   )

@@ -1,24 +1,23 @@
 import BottomSheet, {
+  BottomSheetScrollView,
   BottomSheetBackdrop,
   BottomSheetBackdropProps,
-  BottomSheetScrollView,
-} from '@gorhom/bottom-sheet';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
-import { colors } from '../../../styles/colors';
-import { useBottomSheetStore } from '../../store/bottomsheet-store';
+} from "@gorhom/bottom-sheet";
+import { useBottomSheetStore } from "../../store/bottomsheet-store";
+import { useCallback, useEffect, useMemo, useRef } from "react";
+import { colors } from "../../../styles/colors";
 
 export const AppBottomSheet = () => {
   const { content, close, isOpen, config } = useBottomSheetStore();
-
   const bottomSheetRef = useRef<BottomSheet>(null);
-
-  const snapPoints = useMemo(() => config?.snapPoints || ['80%', '90%'], [config?.snapPoints]);
-
+  const snapPoints = useMemo(
+    () => config?.snapPoints || ["80%", "90%"],
+    [config?.snapPoints]
+  );
   useEffect(() => {
+    console.log({ isOpen, content });
     if (isOpen && content) {
-      requestAnimationFrame(() => {
-        bottomSheetRef.current?.snapToIndex(0);
-      });
+      bottomSheetRef.current?.snapToIndex(0);
     } else {
       bottomSheetRef.current?.close();
     }
@@ -33,17 +32,18 @@ export const AppBottomSheet = () => {
     [close]
   );
 
-  const renderBackdrop = useCallback((props: BottomSheetBackdropProps) => {
-    return (
+  const renderBackdrop = useCallback(
+    (props: BottomSheetBackdropProps) => (
       <BottomSheetBackdrop
         {...props}
         appearsOnIndex={0}
         disappearsOnIndex={-1}
         opacity={0.7}
-        pressBehavior="close"
+        pressBehavior={"close"}
       />
-    );
-  }, []);
+    ),
+    []
+  );
 
   return (
     <BottomSheet
@@ -54,12 +54,15 @@ export const AppBottomSheet = () => {
         borderTopRightRadius: 32,
       }}
       backdropComponent={renderBackdrop}
-      enablePanDownToClose={config?.enablePanDownToClose ?? true}
+      enablePanDownToClose={config.enablePanDownToClose ?? true}
       index={-1}
       animateOnMount
       snapPoints={snapPoints}
-      onChange={handleSheetChanges}>
-      <BottomSheetScrollView>{content}</BottomSheetScrollView>
+      onChange={handleSheetChanges}
+    >
+      <BottomSheetScrollView className="flex-1 bg-background min-h-[400]">
+        {content}
+      </BottomSheetScrollView>
     </BottomSheet>
   );
 };

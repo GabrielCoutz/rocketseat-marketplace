@@ -1,37 +1,15 @@
-import { Ionicons } from '@expo/vector-icons';
-import { FC } from 'react';
-import { Image, Text, TouchableOpacity, View } from 'react-native';
+import { Text, View } from "react-native";
+import { ProductInterface } from "../../../../shared/interfaces/product";
+import { FC } from "react";
+import { ProductCardView } from "./ProductCard.view";
+import { useProductCardViewModel } from "./useProductCad.viewModel";
 
-import { colors } from '../../../../styles/colors';
-import { useProductCardViewModel } from './useProductCard.viewModel';
-import { useRouter } from 'expo-router';
+interface ProductCardParams {
+  product: ProductInterface;
+}
 
-export const ProductCardView: FC<ReturnType<typeof useProductCardViewModel>> = ({ product }) => {
-  const { push } = useRouter();
+export const ProductCard: FC<ProductCardParams> = (props) => {
+  const viewModel = useProductCardViewModel(props);
 
-  return (
-    <TouchableOpacity
-      className="my-1 mb-2 h-[157px] w-[48%] overflow-hidden rounded-xl bg-white p-[4px] shadow-sm"
-      onPress={() => push(`/product/${product.id}`)}>
-      <View>
-        <Image
-          source={{ uri: product.photo }}
-          className="h-[96px] w-full rounded-md"
-          resizeMode="cover"
-        />
-        <View className="absolute right-0 top-0 flex-row items-center rounded-b-lg rounded-r-none bg-white px-2 py-1">
-          <Ionicons name="star" size={12} color={colors['blue-base']} />
-          <Text className="ml-1 text-sm font-semibold">{product.ratingCount}</Text>
-        </View>
-      </View>
-      <View className="p-3">
-        <Text className="mb-1 text-xs font-semibold" numberOfLines={1}>
-          {product.name}
-        </Text>
-        <View className="flex-row items-center justify-between">
-          <Text>R$ {product.value}</Text>
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
+  return <ProductCardView {...viewModel} />;
 };

@@ -1,7 +1,8 @@
-import { useOrdersViewModel } from '../../../viewModels/Orders/useOrders.viewModel';
-import { OrdersView } from '../../../viewModels/Orders/Orders.view';
+import { OrdersView } from "../../../viewModels/Orders/Orders.view";
+import { useOrdersViewModel } from "../../../viewModels/Orders/useOrders.viewModel";
 
-export default function OrdersScreen() {
-  const viewModel = useOrdersViewModel();
-  return <OrdersView {...viewModel} />;
+export default function Orders() {
+  const viewMdel = useOrdersViewModel();
+
+  return <OrdersView {...viewMdel} />;
 }

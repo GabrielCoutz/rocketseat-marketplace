@@ -1,15 +1,7 @@
-import { IUser } from '../user';
-
-export interface IRegisterHttpParams {
+export interface RegisterHttpParams {
   name: string;
   email: string;
-  password: string;
+  avatarUrl?: string;
   phone: string;
-  avatarUrl: string;
-}
-
-export interface IRegisterHttpResponse {
-  user: IUser;
-  token: string;
-  refreshToken: string;
+  password: string;
 }

@@ -5,7 +5,7 @@ export interface OrderInterface {
   productPhoto: string;
   quantity: number;
   totalPrice: number;
-  createdAt: string;
+  createdAt: Date;
   creditCard: {
     id: number;
     maskedNumber: string;

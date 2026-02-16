@@ -1,7 +1,13 @@
-import { useEffect } from 'react';
-import { interpolate, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { useEffect } from "react";
+import {
+  interpolate,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
 
 export const useCreditCardViewModel = (isFlipped: boolean) => {
+  console.log(isFlipped);
   const flipValue = useSharedValue(0);
 
   const frontAnimatedStyle = useAnimatedStyle(() => {
@@ -21,10 +27,10 @@ export const useCreditCardViewModel = (isFlipped: boolean) => {
   });
 
   const formatCardNumber = (cardNumber: string) => {
-    const cleaned = cardNumber.replace(/\s/g, '');
-    const padded = cleaned.padEnd(16, '•');
+    const cleaned = cardNumber.replace(/\s/g, "");
+    const padded = cleaned.padEnd(16, "•");
 
-    return padded.match(/.{1,4}/g)?.join(' ') || '•••• •••• •••• ••••';
+    return padded.match(/.{1,4}/g)?.join(" ") || "•••• •••• •••• ••••";
   };
 
   useEffect(() => {
@@ -33,9 +39,5 @@ export const useCreditCardViewModel = (isFlipped: boolean) => {
     });
   }, [isFlipped]);
 
-  return {
-    frontAnimatedStyle,
-    backAnimatedStyle,
-    formatCardNumber,
-  };
+  return { backAnimatedStyle, frontAnimatedStyle, formatCardNumber };
 };

@@ -1,4 +1,4 @@
-import { CreditCard } from '../credit-card';
+import { CreditCard } from "../credit-card";
 
 export interface CreateCreditCardRequestParams {
   number: string;

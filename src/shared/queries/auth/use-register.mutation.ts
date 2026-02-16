@@ -1,28 +1,31 @@
-import { useMutation } from '@tanstack/react-query';
-import { register } from '../../services/auth.service';
-import { AuthResponse } from '../../interfaces/http/auth-response';
-import { useUserStore } from '../../store/user-store';
+import { useMutation } from "@tanstack/react-query";
+import * as authService from "../../services/auths.service";
+import { RegisterHttpParams } from "../../interfaces/http/register";
+import { AuthResponse } from "../../interfaces/http/auth-response";
+import { useUserStore } from "../../store/user-store";
 
-interface IUseRegisterMutationProps {
-  onSuccess?: (data: AuthResponse) => void;
+interface UserRegisterMutationParams {
+  onSuccess?: () => void;
 }
 
-export const useRegisterMutation = (props?: IUseRegisterMutationProps) => {
+export const useRegisterMutation = ({
+  onSuccess,
+}: UserRegisterMutationParams = {}) => {
   const { setSession } = useUserStore();
 
   const mutation = useMutation({
-    mutationFn: register,
-    onSuccess: (mutationResponse) => {
+    mutationFn: (userData: RegisterHttpParams) =>
+      authService.register(userData),
+    onSuccess: (response) => {
       setSession({
-        refreshToken: mutationResponse.refreshToken,
-        token: mutationResponse.token,
-        user: mutationResponse.user,
+        refreshToken: response.refreshToken,
+        token: response.token,
+        user: response.user,
       });
-
-      props?.onSuccess?.(mutationResponse);
+      onSuccess?.();
     },
     onError: (error) => {
-      console.error('Registration failed:', error);
+      console.log(error);
     },
   });
 

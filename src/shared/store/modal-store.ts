@@ -1,31 +1,30 @@
-import { ReactNode } from 'react';
-import { create } from 'zustand';
+import { ReactNode } from "react";
+import { create } from "zustand";
 
-interface IModalConfig {
-  animationType?: 'none' | 'slide' | 'fade';
+interface ModalConfig {
+  animationType?: "none" | "slide" | "fade";
   transparent?: boolean;
   statusBarTranslucent?: boolean;
 }
 
-interface IModalStore {
+interface ModalStore {
   isOpen: boolean;
   content: ReactNode | null;
-  config: IModalConfig;
-
-  open: (content: ReactNode, config?: IModalConfig) => void;
-  close: VoidFunction;
+  config: ModalConfig;
+  open: (content: ReactNode, config?: ModalConfig) => void;
+  close: () => void;
 }
 
-export const useModalStore = create<IModalStore>((set, get) => ({
+export const useModalStore = create<ModalStore>((set, get) => ({
   isOpen: false,
   content: null,
   config: {
-    animationType: 'fade',
-    transparent: false,
+    animationType: "fade",
+    transparent: true,
     statusBarTranslucent: false,
   },
 
-  open: (content: ReactNode, config?: IModalConfig) =>
+  open: (content: ReactNode, config?: ModalConfig) =>
     set({
       isOpen: true,
       content,
@@ -36,7 +35,7 @@ export const useModalStore = create<IModalStore>((set, get) => ({
     }),
   close: () =>
     set({
-      isOpen: false,
       content: null,
+      isOpen: false,
     }),
 }));

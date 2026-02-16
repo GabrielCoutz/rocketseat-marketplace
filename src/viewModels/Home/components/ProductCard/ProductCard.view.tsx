@@ -1,42 +1,39 @@
-import { Ionicons } from '@expo/vector-icons';
-import { FC } from 'react';
-import { Image, Text, TouchableOpacity, View } from 'react-native';
+import { FC } from "react";
+import { Image, Text, TouchableOpacity, View } from "react-native";
+import { useProductCardViewModel } from "./useProductCad.viewModel";
+import { Ionicons } from "@expo/vector-icons";
+import { colors } from "../../../../styles/colors";
+import { AppPriceText } from "../../../../shared/components/AppPriceText";
+import { router } from "expo-router";
 
-import { colors } from '../../../../styles/colors';
-import { useProductCardViewModel } from './useProductCard.viewModel';
-import { AppPriceText } from '../../../../shared/components/AppPriceText';
-import { useRouter } from 'expo-router';
-
-export const ProductCardView: FC<ReturnType<typeof useProductCardViewModel>> = ({
-  product,
-  formatRating,
-}) => {
-  const { push } = useRouter();
-
+export const ProductCardView: FC<
+  ReturnType<typeof useProductCardViewModel>
+> = ({ product, displayName, formatRating }) => {
   return (
     <TouchableOpacity
-      className="my-1 mb-2 h-[157px] w-[48%] overflow-hidden rounded-xl bg-white p-[4px] shadow-sm"
-      onPress={() => {
-        console.log('xapmson');
-      }}>
+      activeOpacity={0.3}
+      onPress={() => router.push(`/product/${product.id}`)}
+      className="w-[48%] my-1 rounded-xl shadow-sm overflow-hidden h-[157px] p-[4px] bg-white mb-2"
+    >
       <View>
         <Image
           source={{ uri: product.photo }}
-          className="h-[96px] w-full rounded-md"
+          className="w-full h-[96px] rounded-[6px]"
           resizeMode="cover"
         />
-        <View className="absolute right-0 top-0 flex-row items-center rounded-b-lg rounded-r-none bg-white px-2 py-1">
-          <Ionicons name="star" size={12} color={colors['blue-base']} />
-          <Text className="ml-1 text-sm font-semibold">{formatRating}</Text>
+
+        <View className="absolute top-0 right-0 flex-row items-center px-2 py-1 rounded-b-lg rounded-r-none bg-white">
+          <Ionicons name="star" size={12} color={colors["blue-base"]} />
+          <Text className="text-sm font-semibold ml-1">{formatRating}</Text>
         </View>
       </View>
       <View className="p-3">
-        <Text className="mb-1 text-xs font-semibold" numberOfLines={1}>
-          {product.name}
+        <Text className="text-xs font-semibold mb-1" numberOfLines={2}>
+          {displayName}
         </Text>
         <View className="flex-row items-center justify-between">
           <AppPriceText
-            classNameCurrency="text-sm"
+            classNameCurrency="text-small"
             classNameValue="text-lg font-bold flex-1"
             value={Number(product.value)}
           />

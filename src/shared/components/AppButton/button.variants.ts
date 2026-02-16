@@ -1,43 +1,43 @@
-import { tv, type VariantProps } from 'tailwind-variants';
+import { tv, type VariantProps } from "tailwind-variants";
 
-export enum AppButtonVariantsEnum {
-  FILLED = 'filled',
-  OUTLINED = 'outlined',
+export enum AppButtonVaritantsEnum {
+  FILLED = "field",
+  OUTLINED = "outlined",
 }
 
 export const buttonVariants = tv({
   slots: {
-    base: 'w-full h-[48px] rounded-[10px] border px-4 flex-row items-center',
-    text: 'font-semibold text-base',
-    icon: '',
+    base: "w-full h-[48px] rounded-[10px] border px-4 flex-row items-center",
+    text: "font-semibold text-base",
+    icon: "",
   },
   variants: {
     hasIcon: {
       true: {
-        base: 'justify-between',
+        base: "justify-between",
       },
       false: {
-        base: 'justify-center',
+        base: "justify-center",
       },
     },
     isLoading: {
       true: {
-        base: 'opacity-60',
+        base: "opacity-60",
       },
     },
     isDisabled: {
       true: {
-        base: 'opacity-50',
+        base: "opacity-50",
       },
     },
     variant: {
-      filled: {
-        base: 'bg-purple-base border-purple-base',
-        text: 'text-white',
+      field: {
+        base: "bg-purple-base border-purple-base",
+        text: "text-white",
       },
       outlined: {
-        base: 'bg-transparent border-purple-base',
-        text: 'text-purple-base',
+        base: "bg-transparent border-purple-base",
+        text: "text-purple-base",
       },
     },
   },
@@ -45,8 +45,8 @@ export const buttonVariants = tv({
     hasIcon: false,
     isLoading: false,
     isDisabled: false,
-    variant: AppButtonVariantsEnum.FILLED,
+    variant: AppButtonVaritantsEnum.FILLED,
   },
 });
 
-export type ButtonVariants = VariantProps<typeof buttonVariants>;
+export type ButtonVatiants = VariantProps<typeof buttonVariants>;

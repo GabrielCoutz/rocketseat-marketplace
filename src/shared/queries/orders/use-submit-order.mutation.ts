@@ -1,7 +1,6 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Toast } from 'toastify-react-native';
-
-import { submitOrder } from '../../services/orders.service';
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { submitOrder } from "../../services/orders.service";
+import { Toast } from "toastify-react-native";
 
 export const useSubmitOrderMutation = () => {
   const queryClient = useQueryClient();
@@ -9,12 +8,14 @@ export const useSubmitOrderMutation = () => {
   const mutation = useMutation({
     mutationFn: submitOrder,
     onSuccess: (response) => {
+      queryClient.invalidateQueries({
+        queryKey: ["user-orders"],
+      });
       console.log(response.message);
-      queryClient.invalidateQueries({ queryKey: ['user-orders'] });
     },
     onError: (error) => {
       console.log(error);
-      Toast.error(error.message ?? 'Falha ao realizar pedido', 'top');
+      Toast.error(error.message ?? "Falha ao realizar pedido", "top");
     },
   });
 
