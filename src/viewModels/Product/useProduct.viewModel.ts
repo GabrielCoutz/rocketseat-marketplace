@@ -7,6 +7,7 @@ import { AddToCartSuccessModal } from "./components/AddToCartSuccessModal";
 import { router } from "expo-router";
 import { useBottomSheetStore } from "../../shared/store/bottomsheet-store";
 import { ReviewBottomSheet } from "./components/ReviewBttomSheet";
+import { localNotificationsService } from "../../shared/services/local-notifications.service";
 
 export const useProductViewModel = (productId: number) => {
   const {
@@ -67,13 +68,19 @@ export const useProductViewModel = (productId: number) => {
       image: productDetails.photo,
     });
 
+    localNotificationsService.scheduleCartReminder({
+      delayInMinutes: 30,
+      productId: productDetails.id.toString(),
+      productName: productDetails.name,
+    });
+
     open(
       createElement(AddToCartSuccessModal, {
         productName: productDetails.name,
         onGoToCart,
         onClose: close,
         onContinueShopping,
-      })
+      }),
     );
   };
 

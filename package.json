@@ -4,9 +4,10 @@
   "main": "expo-router/entry",
   "scripts": {
     "start": "expo start",
-    "android": "npx expo run:android",
+    "a": "npx expo run:android",
     "ios": "npx expo run:ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "android": "expo run:android"
   },
   "dependencies": {
     "@expo/metro-runtime": "~6.1.2",
@@ -25,6 +26,7 @@
     "expo-image-picker": "~17.0.8",
     "expo-linear-gradient": "~15.0.7",
     "expo-linking": "~8.0.7",
+    "expo-notifications": "~0.32.16",
     "expo-router": "~6.0.10",
     "expo-status-bar": "~3.0.8",
     "nativewind": "^4.2.0",
